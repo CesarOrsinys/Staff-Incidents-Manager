@@ -28,6 +28,8 @@ app.use('/api/workers', workersRouter);
 app.use('/api/incidents', incidentsRouter);
 app.use('/api/reports', reportsRouter);
 
+import { executeKeepalivePing } from './services/keepalive.service.js';
+
 app.get('/api/health', async (_req, res) => {
   const client = getSupabaseClient();
   let dbStatus = 'json_mock';
@@ -50,3 +52,10 @@ app.get('/api/health', async (_req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Server-side keepalive endpoint for Supabase (no frontend interaction)
+app.get('/api/keepalive', async (_req, res) => {
+  const result = await executeKeepalivePing();
+  res.status(result.ok ? 200 : 500).json(result);
+});
+

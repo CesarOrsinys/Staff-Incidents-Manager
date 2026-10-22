@@ -4,6 +4,7 @@ dotenv.config();
 import { app } from './app.js';
 import { RepositoryContainer } from '../src/adapters/infrastructure/di/RepositoryContainer.js';
 import { getSupabaseClient } from '../src/adapters/infrastructure/services/SupabaseClient.js';
+import { startKeepaliveScheduler } from './services/keepalive.service.js';
 
 const PORT = process.env.PORT || 7071;
 
@@ -23,6 +24,7 @@ async function bootstrap() {
 
   app.listen(PORT, () => {
     console.log(`[Staff-Incidents-Manager] Backend server running on http://localhost:${PORT}`);
+    startKeepaliveScheduler();
   });
 }
 
