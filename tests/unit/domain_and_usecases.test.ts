@@ -203,8 +203,18 @@ describe('Staff Incidents Manager - Domain & Use Cases Suite', () => {
       assert.strictEqual(manager.role, 'MANAGER');
       assert.strictEqual(manager.username, 'gerente');
 
+      // Test Borrull supervisor user
+      const supervisor = await authUseCase.execute('Borrull', '2026');
+      assert.ok(supervisor);
+      assert.strictEqual(supervisor.name, 'Yris Orsinys');
+      assert.strictEqual(supervisor.role, 'MANAGER');
+
       await assert.rejects(async () => {
         await authUseCase.execute('gerente', 'wrongpassword');
+      }, /errInvalidCredentials/);
+
+      await assert.rejects(async () => {
+        await authUseCase.execute('Borrull', 'wrongpass');
       }, /errInvalidCredentials/);
     });
   });

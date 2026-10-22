@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { IAuthRepository } from '../../../core/ports/IAuthRepository.js';
 import { ManagerUser } from '../../../core/domain/entities/ManagerUser.js';
@@ -7,8 +8,7 @@ import { JsonAuthRepository } from './JsonAuthRepository.js';
 const AUTH_SALT = 'SIM_SECURE_AUTH_V1_CASTELLO_DE_LA_PLANA_2026';
 
 function computeAuthHash(plain: string): string {
-  // Simple check for expected hash or plain fallback
-  return '9f8e7d...'; // Handled via fallback comparison below
+  return crypto.createHash('sha256').update(`${plain}:${AUTH_SALT}`).digest('hex');
 }
 
 export class SupabaseAuthRepository implements IAuthRepository {
@@ -42,7 +42,19 @@ export class SupabaseAuthRepository implements IAuthRepository {
       const userRow = data[0];
       let valid = false;
       try {
+        // 1. Direct comparison (e.g. authHash compared to bcrypt of authHash)
         valid = await bcrypt.compare(credential, userRow.password_hash);
+
+        // 2. Fallback: if caller passed plain password, compare its authHash
+        if (!valid) {
+          const hashedCredential = computeAuthHash(credential);
+          valid = await bcrypt.compare(hashedCredential, userRow.password_hash);
+        }
+
+        // 3. Fallback: direct token match
+        if (!valid) {
+          valid = (userRow.password_hash === credential || userRow.password_hash === computeAuthHash(credential));
+        }
       } catch {
         valid = false;
       }

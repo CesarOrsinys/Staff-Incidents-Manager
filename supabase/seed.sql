@@ -24,10 +24,20 @@ VALUES
     '$2b$10$wN9P31WJ7b9p8KxQJ.E3k.l6h0pW4t3kK3yP1k3yP1k3yP1k3yP1k',
     'MANAGER',
     true
+  ),
+  (
+    '00000000-0000-0000-0000-000000000003',
+    'Borrull',
+    'yris.orsinys@borrull.gva.es',
+    'Yris Orsinys',
+    '$2b$10$5GjAV6fTN7f3/kZzPVKPL.3EDEGanKnEzUXSR49Go8GoSf0GzU51y', -- 2026
+    'MANAGER',
+    true
   )
 ON CONFLICT (username) DO UPDATE SET
   email = EXCLUDED.email,
-  full_name = EXCLUDED.full_name;
+  full_name = EXCLUDED.full_name,
+  password_hash = EXCLUDED.password_hash;
 
 -- 2. CENTROS DE TRABAJO (SEDES OFICIALES DE LA ADMINISTRACIÓN EN CASTELLÓN)
 INSERT INTO work_centers (id, code, name, entity_type, address, postal_code, city, province, phone, email, active)
