@@ -359,7 +359,7 @@
     /* 2. HUB DASHBOARD STYLING (2 MAIN OPTIONS)               */
     /* ======================================================== */
     .hub-container {
-      max-width: 860px;
+      max-width: 1080px;
       margin: 40px auto;
       text-align: center;
     }
@@ -380,15 +380,15 @@
 
     .hub-tiles-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
     }
 
     .hub-tile {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
-      padding: 36px 28px;
+      padding: 32px 24px;
       cursor: pointer;
       text-align: center;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -407,14 +407,14 @@
     }
 
     .hub-tile-icon {
-      width: 72px;
-      height: 72px;
+      width: 68px;
+      height: 68px;
       border-radius: var(--radius-lg);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.2rem;
-      margin-bottom: 20px;
+      font-size: 2rem;
+      margin-bottom: 18px;
       box-shadow: var(--shadow-glow);
     }
     .hub-tile-icon.icon-form {
@@ -422,6 +422,9 @@
     }
     .hub-tile-icon.icon-report {
       background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    }
+    .hub-tile-icon.icon-master {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     }
 
     .hub-tile h3 {
@@ -738,6 +741,159 @@
     .toast-warning { border-color: rgba(245, 158, 11, 0.4); color: var(--accent-amber); }
     .toast-info { border-color: rgba(56, 189, 248, 0.4); color: var(--accent-blue); }
 
+    /* ======================================================== */
+    /* 5. GESTIÓN DE PLANTILLA Y CENTROS (ESTILOS Y TABLAS)     */
+    /* ======================================================== */
+    .master-section-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    .master-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .master-card-header h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .data-table th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-subtle);
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+    .data-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .text-right {
+      text-align: right;
+    }
+    .text-center {
+      text-align: center;
+    }
+    .py-4 {
+      padding-top: 24px !important;
+      padding-bottom: 24px !important;
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+    .badge-subtle {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+    }
+    .badge-success {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .badge-danger {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--accent-rose);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    /* MODALS */
+    .app-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9990;
+      padding: 16px;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .modal-card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes scaleUp {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .modal-header h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .btn-modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      line-height: 1;
+    }
+    .btn-modal-close:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .modal-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
     /* PRINT CSS FOR PHYSICAL SHEET FORMAT */
     @media print {
       body {
@@ -773,14 +929,14 @@
       }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .hub-tiles-grid {
         grid-template-columns: 1fr;
       }
       main {
         padding: 14px;
       }
-      .card {
+      .card, .master-section-card {
         padding: 20px 14px;
       }
     }
@@ -896,6 +1052,16 @@
             <p>Consultar quién debe horas o tiene horas extras, imprimir informe o descargar la plantilla física oficial.</p>
             <div class="hub-tile-badge">
               <span>📋</span> <span>Consultar Partes</span>
+            </div>
+          </div>
+
+          <!-- OPCIÓN 3: GESTIÓN DE PLANTILLA Y CENTROS -->
+          <div class="hub-tile" data-navigate="master">
+            <div class="hub-tile-icon icon-master">👥</div>
+            <h3 data-i18n="navMaster">Plantilla y Centros</h3>
+            <p>Gestionar centros de trabajo y trabajadores, editar sus datos y asignaciones de plantilla.</p>
+            <div class="hub-tile-badge">
+              <span>⚙️</span> <span>Administrar</span>
             </div>
           </div>
         </div>
@@ -1139,6 +1305,81 @@
       </div>
     </section>
 
+    <!-- ======================================================== -->
+    <!-- 5. PANTALLA GESTIÓN DE PLANTILLA Y CENTROS (MAESTROS)   -->
+    <!-- ======================================================== -->
+    <section class="app-view-section" id="view-master">
+      <div class="view-top-bar">
+        <button class="btn-back" data-navigate="hub">
+          <span>←</span> <span data-i18n="btnBackHub">Volver al Menú Principal</span>
+        </button>
+        <div class="badge badge-subtle">
+          <span>👥 <span data-i18n="navMaster">Plantilla y Centros</span></span>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 1: CENTROS DE TRABAJO -->
+      <div class="master-section-card">
+        <div class="master-card-header">
+          <div>
+            <h3>🏢 Centros de Trabajo</h3>
+            <p style="font-size:0.84rem; color:var(--text-muted); margin-top:2px;">Ubicaciones oficiales y centros asignados (ej: Edificio Juez Borrull)</p>
+          </div>
+          <button class="btn-primary" id="btn-add-center" style="padding:8px 16px; font-size:0.86rem;">
+            <span>➕</span> <span data-i18n="btnAddCenter">Añadir Centro</span>
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:14%;">Código</th>
+                <th style="width:28%;">Nombre del Centro</th>
+                <th style="width:22%;">Ciudad / Municipio</th>
+                <th style="width:24%;">Dirección</th>
+                <th class="text-right" style="width:12%;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="work-centers-tbody">
+              <!-- Renderizado dinámico con botón ✏️ Editar y 🗑️ Eliminar -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 2: TRABAJADORES -->
+      <div class="master-section-card">
+        <div class="master-card-header">
+          <div>
+            <h3>👥 Personal y Trabajadores</h3>
+            <p style="font-size:0.84rem; color:var(--text-muted); margin-top:2px;">Gestión de la plantilla activa, DNI, tipo de contrato y centro asignado</p>
+          </div>
+          <button class="btn-primary" id="btn-add-worker" style="padding:8px 16px; font-size:0.86rem;">
+            <span>➕</span> <span data-i18n="btnAddWorker">Añadir Trabajador</span>
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:24%;">Trabajador / Personal</th>
+                <th style="width:15%;">DNI / Documento</th>
+                <th style="width:16%;">Tipo de Contrato</th>
+                <th style="width:23%;">Centro Asignado</th>
+                <th style="width:10%;">Estado</th>
+                <th class="text-right" style="width:12%;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="workers-tbody">
+              <!-- Renderizado dinámico con botón ✏️ Editar y 🗑️ Eliminar -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ANIMATED SVG HOURGLASS LOADER (GLASSMORPHISM OVERLAY) -->
@@ -1188,6 +1429,155 @@
         </g>
       </svg>
       <div class="loader-text" id="loader-text" style="font-size:0.95rem; font-weight:600; color:#f8fafc; text-shadow:0 2px 8px rgba(0,0,0,0.6);">Procesando...</div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODALES DE GESTIÓN (AÑADIR / EDITAR CENTROS Y PERSONAL) -->
+  <!-- ======================================================== -->
+
+  <!-- MODAL: AÑADIR CENTRO -->
+  <div class="app-modal-backdrop" id="modal-add-center" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🏢 Añadir Centro de Trabajo</h3>
+        <button type="button" class="btn-modal-close" id="btn-close-center-modal">✕</button>
+      </div>
+      <form id="form-add-center">
+        <div class="form-group">
+          <label for="input-center-name">Nombre del Centro *</label>
+          <input type="text" class="form-control" id="input-center-name" placeholder="Ej: Edificio Juez Borrull" required>
+        </div>
+        <div class="form-group">
+          <label for="input-center-code">Código / Referencia *</label>
+          <input type="text" class="form-control" id="input-center-code" placeholder="Ej: JB-01" required>
+        </div>
+        <div class="form-group">
+          <label for="input-center-city">Ciudad / Municipio</label>
+          <input type="text" class="form-control" id="input-center-city" placeholder="Ej: Castellón de la Plana">
+        </div>
+        <div class="form-group">
+          <label for="input-center-address">Dirección</label>
+          <input type="text" class="form-control" id="input-center-address" placeholder="Ej: Plaza Juez Borrull, 1">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('modal-add-center').style.display='none'">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar Centro</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: EDITAR CENTRO -->
+  <div class="app-modal-backdrop" id="modal-edit-center" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>✏️ Editar Centro de Trabajo</h3>
+        <button type="button" class="btn-modal-close" id="btn-close-edit-center-modal">✕</button>
+      </div>
+      <form id="form-edit-center">
+        <div class="form-group">
+          <label for="input-edit-center-name">Nombre del Centro *</label>
+          <input type="text" class="form-control" id="input-edit-center-name" required>
+        </div>
+        <div class="form-group">
+          <label for="input-edit-center-code">Código / Referencia *</label>
+          <input type="text" class="form-control" id="input-edit-center-code" required>
+        </div>
+        <div class="form-group">
+          <label for="input-edit-center-city">Ciudad / Municipio</label>
+          <input type="text" class="form-control" id="input-edit-center-city">
+        </div>
+        <div class="form-group">
+          <label for="input-edit-center-address">Dirección</label>
+          <input type="text" class="form-control" id="input-edit-center-address">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('modal-edit-center').style.display='none'">Cancelar</button>
+          <button type="submit" class="btn-primary">Actualizar Centro</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AÑADIR TRABAJADOR -->
+  <div class="app-modal-backdrop" id="modal-add-worker" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>👤 Añadir Nuevo Trabajador</h3>
+        <button type="button" class="btn-modal-close" id="btn-close-worker-modal">✕</button>
+      </div>
+      <form id="form-add-worker">
+        <div class="form-group">
+          <label for="input-worker-name">Nombre y Apellidos *</label>
+          <input type="text" class="form-control" id="input-worker-name" placeholder="Ej: Aurora Giménez" required>
+        </div>
+        <div class="form-group">
+          <label for="input-worker-dni">DNI / NIE</label>
+          <input type="text" class="form-control" id="input-worker-dni" placeholder="Ej: 12345678Z">
+        </div>
+        <div class="form-group">
+          <label for="select-worker-contract">Tipo de Contrato</label>
+          <select class="form-control" id="select-worker-contract">
+            <option value="INDEFINIDO">Indefinido</option>
+            <option value="TEMPORAL">Temporal</option>
+            <option value="SUPLENCIA">Interinidad / Suplencia</option>
+            <option value="FORMACION">Formación / Prácticas</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="select-worker-center">Centro de Trabajo Asignado</label>
+          <select class="form-control" id="select-worker-center"></select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('modal-add-worker').style.display='none'">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar Trabajador</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: EDITAR TRABAJADOR -->
+  <div class="app-modal-backdrop" id="modal-edit-worker" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>✏️ Editar Datos del Trabajador</h3>
+        <button type="button" class="btn-modal-close" id="btn-close-edit-worker-modal">✕</button>
+      </div>
+      <form id="form-edit-worker">
+        <div class="form-group">
+          <label for="input-edit-worker-name">Nombre y Apellidos *</label>
+          <input type="text" class="form-control" id="input-edit-worker-name" required>
+        </div>
+        <div class="form-group">
+          <label for="input-edit-worker-dni">DNI / NIE</label>
+          <input type="text" class="form-control" id="input-edit-worker-dni">
+        </div>
+        <div class="form-group">
+          <label for="select-edit-worker-contract">Tipo de Contrato</label>
+          <select class="form-control" id="select-edit-worker-contract">
+            <option value="INDEFINIDO">Indefinido</option>
+            <option value="TEMPORAL">Temporal</option>
+            <option value="SUPLENCIA">Interinidad / Suplencia</option>
+            <option value="FORMACION">Formación / Prácticas</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="select-edit-worker-center">Centro de Trabajo Asignado</label>
+          <select class="form-control" id="select-edit-worker-center"></select>
+        </div>
+        <div class="form-group">
+          <label for="select-edit-worker-active">Estado</label>
+          <select class="form-control" id="select-edit-worker-active">
+            <option value="true">Activo</option>
+            <option value="false">Inactivo / Baja</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('modal-edit-worker').style.display='none'">Cancelar</button>
+          <button type="submit" class="btn-primary">Actualizar Trabajador</button>
+        </div>
+      </form>
     </div>
   </div>
 
