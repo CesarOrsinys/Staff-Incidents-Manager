@@ -16,16 +16,16 @@ export class ExportService implements IExportService {
     // Fila 2: Encabezados de columna
     officialRows.push(['TRABAJADOR/@', 'FECHA', 'INCIDENCIA Horas Extr / DC']);
 
-    // Fila 3 en adelante: Datos de trabajadores
+    // Fila 3 en adelante: Datos de trabajadores con incidencias o ausencias
     for (const item of data) {
       const workerName = item.worker.name.toUpperCase();
       if (!item.incidents || item.incidents.length === 0) {
         if (item.absentDates && item.absentDates.length > 0) {
           for (const abs of item.absentDates) {
-            officialRows.push([workerName, abs.date, abs.substitutedBy ? `Suplido/a por ${abs.substitutedBy}` : abs.reason]);
+            const parts = abs.date.split('-');
+            const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0].slice(2)}` : abs.date;
+            officialRows.push([workerName, formattedDate, abs.substitutedBy ? `Suplido/a por ${abs.substitutedBy}` : abs.reason]);
           }
-        } else {
-          officialRows.push([workerName, '', '']);
         }
       } else {
         item.incidents.forEach((inc, idx) => {
@@ -49,11 +49,6 @@ export class ExportService implements IExportService {
           officialRows.push([idx === 0 ? workerName : '', dateStr, desc]);
         });
       }
-    }
-
-    // Filas en blanco para rellenar a mano
-    for (let i = 0; i < 8; i++) {
-      officialRows.push(['', '', '']);
     }
 
     const wsOfficial = XLSX.utils.aoa_to_sheet(officialRows);
@@ -137,18 +132,14 @@ export class ExportService implements IExportService {
       if (!item.incidents || item.incidents.length === 0) {
         if (item.absentDates && item.absentDates.length > 0) {
           for (const abs of item.absentDates) {
+            const parts = abs.date.split('-');
+            const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0].slice(2)}` : abs.date;
             body.push([
               { content: workerName, styles: { fontStyle: 'bold' } },
-              abs.date,
+              formattedDate,
               abs.substitutedBy ? `Suplido/a por ${abs.substitutedBy}` : abs.reason
             ]);
           }
-        } else {
-          body.push([
-            { content: workerName, styles: { fontStyle: 'bold' } },
-            '',
-            ''
-          ]);
         }
       } else {
         item.incidents.forEach((inc, idx) => {
@@ -177,11 +168,6 @@ export class ExportService implements IExportService {
           ]);
         });
       }
-    }
-
-    // 8 Filas en blanco para rellenar a mano
-    for (let i = 0; i < 8; i++) {
-      body.push(['', '', '']);
     }
 
     const tableConfig = {

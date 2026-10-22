@@ -9,6 +9,8 @@ export interface MonthlyReportFilter {
   year: number;
   workCenterId?: string;
   workerId?: string;
+  filterType?: 'all' | 'owed' | 'overtime';
+  onlyWithIncidents?: boolean;
 }
 
 export class GetMonthlyReportUseCase {
@@ -149,7 +151,30 @@ export class GetMonthlyReportUseCase {
     }
 
     // Sort report by worker name
-    return reportItems.sort((a, b) => a.worker.name.localeCompare(b.worker.name));
+    let finalItems = reportItems.sort((a, b) => a.worker.name.localeCompare(b.worker.name));
+
+    if (filter.onlyWithIncidents) {
+      finalItems = finalItems.filter(item => 
+        (item.incidents && item.incidents.length > 0) ||
+        (item.absentDates && item.absentDates.length > 0)
+      );
+    }
+
+    if (filter.filterType === 'owed') {
+      finalItems = finalItems.filter(item => 
+        (item.owedHours && item.owedHours > 0) || 
+        (item.absentDates && item.absentDates.length > 0) ||
+        item.vacationDaysCount > 0 ||
+        item.personalMattersDaysCount > 0 ||
+        item.leaveDaysCount > 0
+      );
+    } else if (filter.filterType === 'overtime') {
+      finalItems = finalItems.filter(item => 
+        ((item.totalSubstitutionHours || 0) + (item.totalOvertimeHours || 0)) > 0
+      );
+    }
+
+    return finalItems;
   }
 
   private calculateDays(start: string, end: string): number {

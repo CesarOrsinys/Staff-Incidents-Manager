@@ -973,14 +973,9 @@
       background: rgba(239, 68, 68, 0.15);
     }
 
-    /* OCULTAR FILAS EN BLANCO EN PANTALLA (SOLO IMPRESIÓN FÍSICA EN PAPEL) */
+    /* OCULTAR FILAS EN BLANCO TANTO EN PANTALLA COMO EN IMPRESIÓN */
     .sheet-blank-row {
       display: none !important;
-    }
-    @media print {
-      .sheet-blank-row {
-        display: table-row !important;
-      }
     }
 
     /* CONMUTADOR DE VISTAS (TARJETAS MÓVIL vs TABLA OFICIAL) */
@@ -1376,8 +1371,12 @@
         background: #ffffff !important;
         color: #000000 !important;
       }
-      header, .view-top-bar, .report-filters-bar, .report-metrics-row, .no-print, .btn-delete-row {
+      header, .view-top-bar, .report-filters-bar, .report-metrics-row, .no-print, .btn-delete-row,
+      #report-cards-container, .mobile-cards-feed, .view-mode-switcher, .mobile-scroll-hint, .sheet-blank-row {
         display: none !important;
+      }
+      #report-table-container {
+        display: block !important;
       }
       main {
         max-width: 100% !important;
@@ -1391,6 +1390,7 @@
       }
       .official-table {
         border: 2px solid #000000 !important;
+        width: 100% !important;
       }
       .official-table thead tr.row-header-title th,
       .official-table thead tr.row-header-cols th {
@@ -1398,10 +1398,6 @@
         color: #ffffff !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
-      }
-      .sheet-blank-row td {
-        height: 38px !important;
-        border-bottom: 1px solid #64748b !important;
       }
     }
 

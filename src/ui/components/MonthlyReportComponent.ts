@@ -259,14 +259,12 @@ export class MonthlyReportComponent {
       }
     }
 
-    // Add blank lines for physical paper print only (hidden on interactive screen via CSS)
-    const blankRowsCount = 8;
-    for (let i = 0; i < blankRowsCount; i++) {
-      rowsHtml += `
-        <tr class="sheet-data-row sheet-blank-row">
-          <td class="col-worker">&nbsp;</td>
-          <td class="col-date">&nbsp;</td>
-          <td class="col-incident">&nbsp;</td>
+    if (!rowsHtml) {
+      rowsHtml = `
+        <tr class="sheet-data-row">
+          <td colspan="3" style="text-align: center; padding: 1.5rem; color: var(--text-secondary); font-style: italic;">
+            No hay registros con los filtros seleccionados
+          </td>
         </tr>
       `;
     }
@@ -453,7 +451,9 @@ export class MonthlyReportComponent {
         const query = new URLSearchParams({
           month: filterMonth,
           year: filterYear,
-          workCenterId: filterCenter
+          workCenterId: filterCenter,
+          filterType: this.currentFilter,
+          onlyWithIncidents: String(this.onlyWithIncidents)
         });
 
         const headers: Record<string, string> = {};
@@ -489,7 +489,9 @@ export class MonthlyReportComponent {
         const query = new URLSearchParams({
           month: filterMonth,
           year: filterYear,
-          workCenterId: filterCenter
+          workCenterId: filterCenter,
+          filterType: this.currentFilter,
+          onlyWithIncidents: String(this.onlyWithIncidents)
         });
 
         const headers: Record<string, string> = {};

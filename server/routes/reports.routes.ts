@@ -38,17 +38,23 @@ reportsRouter.get('/monthly', async (req: Request, res: Response) => {
   }
 });
 
-reportsRouter.get('/export/excel', async (req: Request, res: Response) => {
+const handleExcelExport = async (req: Request, res: Response) => {
   try {
     const { exportReportUseCase } = getReportUseCases();
-    const month = Number(req.query.month) || (new Date().getMonth() + 1);
-    const year = Number(req.query.year) || new Date().getFullYear();
-    const workCenterId = req.query.workCenterId as string | undefined;
+    const month = Number(req.query.month || req.body?.month) || (new Date().getMonth() + 1);
+    const year = Number(req.query.year || req.body?.year) || new Date().getFullYear();
+    const workCenterId = (req.query.workCenterId || req.body?.workCenterId) as string | undefined;
+    const filterType = (req.query.filterType || req.body?.filterType) as any;
+    const onlyWithIncidents = req.query.onlyWithIncidents !== undefined 
+      ? req.query.onlyWithIncidents === 'true' 
+      : (req.body?.onlyWithIncidents ?? true);
 
     const buffer = await exportReportUseCase.exportExcel({
       month,
       year,
-      workCenterId
+      workCenterId,
+      filterType,
+      onlyWithIncidents
     });
 
     const filename = `Parte_Incidencias_${year}_${String(month).padStart(2, '0')}.xlsx`;
@@ -58,19 +64,25 @@ reportsRouter.get('/export/excel', async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
-});
+};
 
-reportsRouter.get('/export/pdf', async (req: Request, res: Response) => {
+const handlePdfExport = async (req: Request, res: Response) => {
   try {
     const { exportReportUseCase } = getReportUseCases();
-    const month = Number(req.query.month) || (new Date().getMonth() + 1);
-    const year = Number(req.query.year) || new Date().getFullYear();
-    const workCenterId = req.query.workCenterId as string | undefined;
+    const month = Number(req.query.month || req.body?.month) || (new Date().getMonth() + 1);
+    const year = Number(req.query.year || req.body?.year) || new Date().getFullYear();
+    const workCenterId = (req.query.workCenterId || req.body?.workCenterId) as string | undefined;
+    const filterType = (req.query.filterType || req.body?.filterType) as any;
+    const onlyWithIncidents = req.query.onlyWithIncidents !== undefined 
+      ? req.query.onlyWithIncidents === 'true' 
+      : (req.body?.onlyWithIncidents ?? true);
 
     const pdfData = await exportReportUseCase.exportPdf({
       month,
       year,
-      workCenterId
+      workCenterId,
+      filterType,
+      onlyWithIncidents
     });
 
     const filename = `Parte_Incidencias_${year}_${String(month).padStart(2, '0')}.pdf`;
@@ -80,4 +92,9 @@ reportsRouter.get('/export/pdf', async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
-});
+};
+
+reportsRouter.get('/export/excel', handleExcelExport);
+reportsRouter.post('/export/excel', handleExcelExport);
+reportsRouter.get('/export/pdf', handlePdfExport);
+reportsRouter.post('/export/pdf', handlePdfExport);
