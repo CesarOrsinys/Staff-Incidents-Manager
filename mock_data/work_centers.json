@@ -1,0 +1,34 @@
+[
+  {
+    "id": "wc_borrull",
+    "name": "Edificio Juez Borrull",
+    "code": "BOR-001",
+    "address": "Plaza del Juez Borrull, 1, 12003 Castelló",
+    "city": "Castellón de la Plana",
+    "active": true
+  },
+  {
+    "id": "wc_generalitat",
+    "name": "Sede Central Generalitat",
+    "code": "GEN-002",
+    "address": "Calle Caballeros, 2, 46001 Valencia",
+    "city": "Valencia",
+    "active": true
+  },
+  {
+    "id": "wc_octubre",
+    "name": "Complejo Administrativo 9 d'Octubre",
+    "code": "OCT-003",
+    "address": "Carrer de la Democràcia, 77, 46018 València",
+    "city": "Valencia",
+    "active": true
+  },
+  {
+    "id": "wc_salud",
+    "name": "Centro Integrado de Salud Jaume I",
+    "code": "CS-004",
+    "address": "Avinguda del Rei Jaume I, 14, 12001 Castelló",
+    "city": "Castellón de la Plana",
+    "active": true
+  }
+]
