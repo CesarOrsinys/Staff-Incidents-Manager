@@ -51,52 +51,143 @@ export class MasterDataComponent {
 
   public static renderWorkCenters(): void {
     const tbody = document.getElementById('work-centers-tbody');
-    if (!tbody) return;
+    const cardsFeed = document.getElementById('work-centers-cards');
+    if (!tbody && !cardsFeed) return;
 
     if (AppState.workCenters.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No hay centros de trabajo registrados.</td></tr>`;
+      if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No hay centros de trabajo registrados.</td></tr>`;
+      if (cardsFeed) cardsFeed.innerHTML = `<div class="text-center text-muted py-4" style="background:var(--bg-surface); border-radius:var(--radius-md); padding:20px; border:1px dashed var(--border-subtle);">No hay centros de trabajo registrados.</div>`;
       return;
     }
 
-    tbody.innerHTML = AppState.workCenters.map(wc => `
-      <tr>
-        <td><strong>${wc.code}</strong></td>
-        <td>${wc.name}</td>
-        <td>${wc.city || '-'}</td>
-        <td>${wc.address || '-'}</td>
-        <td class="text-right" style="white-space:nowrap;">
-          <button class="btn-sm btn-outline-primary btn-edit-center" data-id="${wc.id}" title="Editar Centro" style="margin-right:6px; cursor:pointer; padding:4px 8px; border-radius:6px; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); color:var(--accent-blue);">✏️ Editar</button>
-          <button class="btn-sm btn-outline-danger btn-delete-center" data-id="${wc.id}" title="Eliminar" style="cursor:pointer; padding:4px 8px; border-radius:6px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.3); color:var(--accent-rose);">🗑️</button>
-        </td>
-      </tr>
-    `).join('');
+    if (tbody) {
+      tbody.innerHTML = AppState.workCenters.map(wc => `
+        <tr>
+          <td><strong>${wc.code}</strong></td>
+          <td>${wc.name}</td>
+          <td>${wc.city || '-'}</td>
+          <td>${wc.address || '-'}</td>
+          <td class="text-right" style="white-space:nowrap;">
+            <button class="btn-sm btn-outline-primary btn-edit-center" data-id="${wc.id}" title="Editar Centro" style="margin-right:6px; cursor:pointer; padding:4px 8px; border-radius:6px; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); color:var(--accent-blue);">✏️ Editar</button>
+            <button class="btn-sm btn-outline-danger btn-delete-center" data-id="${wc.id}" title="Eliminar" style="cursor:pointer; padding:4px 8px; border-radius:6px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.3); color:var(--accent-rose);">🗑️</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    if (cardsFeed) {
+      cardsFeed.innerHTML = AppState.workCenters.map(wc => {
+        const assignedWorkersCount = AppState.workers.filter(w => w.assignedWorkCenterId === wc.id).length;
+        return `
+          <div class="master-mobile-card">
+            <div class="master-card-top">
+              <div class="master-card-title">
+                <span class="master-icon">🏢</span>
+                <span>${wc.name}</span>
+              </div>
+              <span class="badge badge-subtle font-mono">${wc.code}</span>
+            </div>
+
+            <div class="master-card-details-grid">
+              <div class="master-detail-item">
+                <span class="master-detail-label">📍 Ciudad</span>
+                <span class="master-detail-value">${wc.city || 'No especificada'}</span>
+              </div>
+              <div class="master-detail-item">
+                <span class="master-detail-label">👥 Plantilla</span>
+                <span class="master-detail-value font-semibold">${assignedWorkersCount} personas</span>
+              </div>
+              <div class="master-detail-item item-full">
+                <span class="master-detail-label">📫 Dirección</span>
+                <span class="master-detail-value">${wc.address || 'Sin dirección registrada'}</span>
+              </div>
+            </div>
+
+            <div class="master-card-actions">
+              <button class="btn-sm btn-edit-center" data-id="${wc.id}" title="Editar Centro">
+                <span>✏️</span> <span>Editar</span>
+              </button>
+              <button class="btn-sm btn-delete-center" data-id="${wc.id}" title="Eliminar Centro">
+                <span>🗑️</span> <span>Eliminar</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
   }
 
   public static renderWorkers(): void {
     const tbody = document.getElementById('workers-tbody');
-    if (!tbody) return;
+    const cardsFeed = document.getElementById('workers-cards');
+    if (!tbody && !cardsFeed) return;
 
     if (AppState.workers.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No hay trabajadores registrados.</td></tr>`;
+      if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No hay trabajadores registrados.</td></tr>`;
+      if (cardsFeed) cardsFeed.innerHTML = `<div class="text-center text-muted py-4" style="background:var(--bg-surface); border-radius:var(--radius-md); padding:20px; border:1px dashed var(--border-subtle);">No hay trabajadores registrados.</div>`;
       return;
     }
 
-    tbody.innerHTML = AppState.workers.map(w => {
-      const center = AppState.workCenters.find(c => c.id === w.assignedWorkCenterId);
-      const contractLabel = LanguageManager.t(`contract_${w.contractStatus}`) || w.contractStatus;
-      return `
-        <tr>
-          <td><strong>${w.name}</strong></td>
-          <td><span class="badge badge-subtle">${contractLabel}</span></td>
-          <td>${center ? center.name : '-'}</td>
-          <td><span class="badge ${w.active ? 'badge-success' : 'badge-danger'}">${w.active ? 'Activo' : 'Inactivo'}</span></td>
-          <td class="text-right" style="white-space:nowrap;">
-            <button class="btn-sm btn-outline-primary btn-edit-worker" data-id="${w.id}" title="Editar Trabajador" style="margin-right:6px; cursor:pointer; padding:4px 8px; border-radius:6px; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); color:var(--accent-blue);">✏️ Editar</button>
-            <button class="btn-sm btn-outline-danger btn-delete-worker" data-id="${w.id}" title="Eliminar" style="cursor:pointer; padding:4px 8px; border-radius:6px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.3); color:var(--accent-rose);">🗑️</button>
-          </td>
-        </tr>
-      `;
-    }).join('');
+    if (tbody) {
+      tbody.innerHTML = AppState.workers.map(w => {
+        const center = AppState.workCenters.find(c => c.id === w.assignedWorkCenterId);
+        const contractLabel = LanguageManager.t(`contract_${w.contractStatus}`) || w.contractStatus;
+        return `
+          <tr>
+            <td><strong>${w.name}</strong></td>
+            <td><span class="badge badge-subtle">${contractLabel}</span></td>
+            <td>${center ? center.name : '-'}</td>
+            <td><span class="badge ${w.active ? 'badge-success' : 'badge-danger'}">${w.active ? 'Activo' : 'Inactivo'}</span></td>
+            <td class="text-right" style="white-space:nowrap;">
+              <button class="btn-sm btn-outline-primary btn-edit-worker" data-id="${w.id}" title="Editar Trabajador" style="margin-right:6px; cursor:pointer; padding:4px 8px; border-radius:6px; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); color:var(--accent-blue);">✏️ Editar</button>
+              <button class="btn-sm btn-outline-danger btn-delete-worker" data-id="${w.id}" title="Eliminar" style="cursor:pointer; padding:4px 8px; border-radius:6px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.3); color:var(--accent-rose);">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    if (cardsFeed) {
+      cardsFeed.innerHTML = AppState.workers.map(w => {
+        const center = AppState.workCenters.find(c => c.id === w.assignedWorkCenterId);
+        const contractLabel = LanguageManager.t(`contract_${w.contractStatus}`) || w.contractStatus;
+        return `
+          <div class="master-mobile-card">
+            <div class="master-card-top">
+              <div class="master-card-title">
+                <span class="master-icon">👤</span>
+                <span>${w.name}</span>
+              </div>
+              <span class="badge ${w.active ? 'badge-success' : 'badge-danger'}">
+                ${w.active ? '● Activo' : '○ Inactivo'}
+              </span>
+            </div>
+
+            <div class="master-card-details-grid">
+              <div class="master-detail-item">
+                <span class="master-detail-label">📋 Contrato</span>
+                <span class="master-detail-value">
+                  <span class="badge badge-subtle">${contractLabel}</span>
+                </span>
+              </div>
+              <div class="master-detail-item">
+                <span class="master-detail-label">🏢 Centro Asignado</span>
+                <span class="master-detail-value font-semibold">${center ? center.name : 'Sin asignar'}</span>
+              </div>
+            </div>
+
+            <div class="master-card-actions">
+              <button class="btn-sm btn-edit-worker" data-id="${w.id}" title="Editar Trabajador">
+                <span>✏️</span> <span>Editar</span>
+              </button>
+              <button class="btn-sm btn-delete-worker" data-id="${w.id}" title="Eliminar Trabajador">
+                <span>🗑️</span> <span>Eliminar</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
   }
 
   private static setupListeners(): void {

@@ -1142,6 +1142,141 @@
       }
     }
 
+    /* VISTA DE TARJETAS MÓVILES PARA MAESTROS (CENTROS Y PLANTILLA) */
+    .master-cards-feed {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .master-mobile-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .master-mobile-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .master-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .master-card-title {
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    .master-icon {
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+
+    .master-card-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 14px;
+    }
+
+    .master-detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .master-detail-item.item-full {
+      grid-column: 1 / -1;
+    }
+
+    .master-detail-label {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .master-detail-value {
+      font-size: 0.88rem;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .master-card-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .master-card-actions .btn-sm {
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .master-card-actions .btn-edit-center,
+    .master-card-actions .btn-edit-worker {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent-blue);
+    }
+
+    .master-card-actions .btn-edit-center:hover,
+    .master-card-actions .btn-edit-worker:hover {
+      background: rgba(56, 189, 248, 0.25);
+      color: #ffffff;
+    }
+
+    .master-card-actions .btn-delete-center,
+    .master-card-actions .btn-delete-worker {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: var(--accent-rose);
+    }
+
+    .master-card-actions .btn-delete-center:hover,
+    .master-card-actions .btn-delete-worker:hover {
+      background: rgba(244, 63, 94, 0.25);
+      color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+      .master-table-wrapper {
+        display: none !important;
+      }
+      .master-cards-feed {
+        display: flex !important;
+      }
+    }
+
     /* LOADER OVERLAY - MATHEMATICALLY CENTERED ACROSS DESKTOP & MOBILE */
     .app-loader-backdrop {
       position: fixed !important;
@@ -1951,7 +2086,7 @@
           </button>
         </div>
 
-        <div class="table-responsive">
+        <div class="master-table-wrapper table-responsive">
           <table class="data-table">
             <thead>
               <tr>
@@ -1967,6 +2102,11 @@
             </tbody>
           </table>
         </div>
+
+        <!-- TARJETAS MÓVILES PARA CENTROS DE TRABAJO -->
+        <div class="master-cards-feed" id="work-centers-cards">
+          <!-- Renderizado dinámico para dispositivos móviles -->
+        </div>
       </div>
 
       <!-- SECCIÓN 2: TRABAJADORES -->
@@ -1981,7 +2121,7 @@
           </button>
         </div>
 
-        <div class="table-responsive">
+        <div class="master-table-wrapper table-responsive">
           <table class="data-table">
             <thead>
               <tr>
@@ -1996,6 +2136,11 @@
               <!-- Renderizado dinámico con botón ✏️ Editar y 🗑️ Eliminar -->
             </tbody>
           </table>
+        </div>
+
+        <!-- TARJETAS MÓVILES PARA PLANTILLA Y PERSONAL -->
+        <div class="master-cards-feed" id="workers-cards">
+          <!-- Renderizado dinámico para dispositivos móviles -->
         </div>
       </div>
     </section>
