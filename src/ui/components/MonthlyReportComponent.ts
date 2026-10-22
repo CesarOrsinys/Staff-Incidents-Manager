@@ -5,16 +5,17 @@ import { LanguageManager } from '../i18n/LanguageManager.js';
 import { showToast } from '../services/ToastService.js';
 import { withLoader } from '../services/LoaderService.js';
 
+import { MasterDataComponent } from './MasterDataComponent.js';
+
 export class MonthlyReportComponent {
   private static currentFilter: 'all' | 'owed' | 'overtime' = 'all';
 
   public static init(): void {
-    this.populateFilters();
     this.setupListeners();
-    this.loadReport();
   }
 
-  public static populateFilters(): void {
+  public static async populateFilters(): Promise<void> {
+    await MasterDataComponent.ensureCentersLoaded();
     const filterCenter = document.getElementById('report-work-center') as HTMLSelectElement;
     if (filterCenter) {
       filterCenter.innerHTML = AppState.workCenters.map(c => `
@@ -35,6 +36,9 @@ export class MonthlyReportComponent {
   }
 
   public static async loadReport(): Promise<void> {
+    if (!AppState.currentUser) return;
+    await this.populateFilters();
+
     const filterCenter = (document.getElementById('report-work-center') as HTMLSelectElement)?.value || 'wc_borrull';
     const filterMonth = (document.getElementById('report-month') as HTMLSelectElement)?.value || String(AppState.selectedMonth);
     const filterYear = (document.getElementById('report-year') as HTMLInputElement)?.value || String(AppState.selectedYear);
@@ -47,7 +51,10 @@ export class MonthlyReportComponent {
         });
         if (filterCenter) query.append('workCenterId', filterCenter);
 
-        const res = await fetch(`/api/reports/monthly?${query.toString()}`);
+        const headers: Record<string, string> = {};
+        if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
+
+        const res = await fetch(`/api/reports/monthly?${query.toString()}`, { headers });
         if (!res.ok) throw new Error('Error al cargar informe');
         const data: MonthlyWorkerReportItem[] = await res.json();
 
@@ -256,7 +263,9 @@ export class MonthlyReportComponent {
         if (!confirm('¿Eliminar este registro del parte?')) return;
 
         await withLoader(async () => {
-          const res = await fetch(`/api/incidents/${id}`, { method: 'DELETE' });
+          const headers: Record<string, string> = {};
+          if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
+          const res = await fetch(`/api/incidents/${id}`, { method: 'DELETE', headers });
           if (res.ok) {
             showToast('Registro eliminado', 'info');
             this.loadReport();
@@ -280,7 +289,10 @@ export class MonthlyReportComponent {
           workCenterId: filterCenter
         });
 
-        const res = await fetch(`/api/reports/export/excel?${query.toString()}`);
+        const headers: Record<string, string> = {};
+        if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
+
+        const res = await fetch(`/api/reports/export/excel?${query.toString()}`, { headers });
         if (!res.ok) throw new Error('Error al generar Excel');
 
         const blob = await res.blob();
@@ -313,7 +325,10 @@ export class MonthlyReportComponent {
           workCenterId: filterCenter
         });
 
-        const res = await fetch(`/api/reports/export/pdf?${query.toString()}`);
+        const headers: Record<string, string> = {};
+        if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
+
+        const res = await fetch(`/api/reports/export/pdf?${query.toString()}`, { headers });
         if (!res.ok) throw new Error('Error al generar PDF');
 
         const blob = await res.blob();

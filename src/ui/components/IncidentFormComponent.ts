@@ -5,14 +5,16 @@ import { LanguageManager } from '../i18n/LanguageManager.js';
 import { showToast } from '../services/ToastService.js';
 import { withLoader } from '../services/LoaderService.js';
 
+import { MasterDataComponent } from './MasterDataComponent.js';
+
 export class IncidentFormComponent {
   public static init(): void {
-    this.populateCenters();
     this.setupListeners();
     this.setupDateModeSwitching();
   }
 
-  public static populateCenters(): void {
+  public static async populateCenters(): Promise<void> {
+    await MasterDataComponent.ensureCentersLoaded();
     const selectCenter = document.getElementById('form-work-center') as HTMLSelectElement;
     if (!selectCenter) return;
 
@@ -27,13 +29,18 @@ export class IncidentFormComponent {
     }
 
     AppState.selectedWorkCenterId = selectCenter.value;
-    this.loadWorkersForCenter(selectCenter.value);
+    if (selectCenter.value) {
+      await this.loadWorkersForCenter(selectCenter.value);
+    }
   }
 
   public static async loadWorkersForCenter(centerId: string): Promise<void> {
+    if (!centerId) return;
     await withLoader(async () => {
       try {
-        const res = await fetch(`/api/workers?workCenterId=${centerId}`);
+        const headers: Record<string, string> = {};
+        if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
+        const res = await fetch(`/api/workers?workCenterId=${centerId}`, { headers });
         if (res.ok) {
           const workers = await res.json();
           AppState.workers = workers;
@@ -268,9 +275,11 @@ export class IncidentFormComponent {
 
     await withLoader(async () => {
       try {
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
         const res = await fetch('/api/incidents', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(payload)
         });
 

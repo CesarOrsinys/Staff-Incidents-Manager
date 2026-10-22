@@ -6,6 +6,11 @@ import { IncidentFormComponent } from './ui/components/IncidentFormComponent.js'
 import { MonthlyReportComponent } from './ui/components/MonthlyReportComponent.js';
 
 export function navigateTo(targetView: 'login' | 'hub' | 'form' | 'report' | 'master'): void {
+  // If not authenticated, force login view and avoid any data fetching
+  if (!AppState.currentUser && targetView !== 'login') {
+    targetView = 'login';
+  }
+
   AppState.activeView = targetView;
   const sections = document.querySelectorAll('.app-view-section');
   sections.forEach(sec => {
@@ -16,10 +21,15 @@ export function navigateTo(targetView: 'login' | 'hub' | 'form' | 'report' | 'ma
     }
   });
 
-  if (targetView === 'report') {
-    MonthlyReportComponent.loadReport();
-  } else if (targetView === 'form') {
-    IncidentFormComponent.populateCenters();
+  // Only load data when authenticated and when the active view requires it
+  if (AppState.currentUser) {
+    if (targetView === 'report') {
+      MonthlyReportComponent.loadReport();
+    } else if (targetView === 'form') {
+      IncidentFormComponent.populateCenters();
+    } else if (targetView === 'master') {
+      MasterDataComponent.loadData();
+    }
   }
 }
 
@@ -30,33 +40,38 @@ async function bootstrapApp() {
   // 2. Setup theme switching
   setupTheme();
 
-  // 3. Load Master Data (Work Centers & Workers)
-  await MasterDataComponent.loadData();
+  // 3. Initialize components event listeners only (ZERO initial network requests)
   MasterDataComponent.init();
-
-  // 4. Initialize Form & Reports
   IncidentFormComponent.init();
   MonthlyReportComponent.init();
 
-  // 5. Initialize Auth (determines whether to show login or hub)
+  // 4. Initialize Auth (determines whether to show login or hub)
   AuthComponent.init();
 
-  // 6. Navigation Actions (Hub cards & back buttons)
+  // 5. Navigation Actions (Hub cards & back buttons)
   setupNavigation();
 
-  // 7. Global reactive listeners
+  // 6. Global reactive listeners
   document.addEventListener('app:master-data-changed', () => {
-    IncidentFormComponent.populateCenters();
-    MonthlyReportComponent.populateFilters();
-    MonthlyReportComponent.loadReport();
+    if (AppState.activeView === 'form') {
+      IncidentFormComponent.populateCenters();
+    } else if (AppState.activeView === 'report') {
+      MonthlyReportComponent.loadReport();
+    } else if (AppState.activeView === 'master') {
+      MasterDataComponent.loadData();
+    }
   });
 
   document.addEventListener('app:incident-added', () => {
-    MonthlyReportComponent.loadReport();
+    if (AppState.activeView === 'report') {
+      MonthlyReportComponent.loadReport();
+    }
   });
 
   document.addEventListener('app:incident-deleted', () => {
-    MonthlyReportComponent.loadReport();
+    if (AppState.activeView === 'report') {
+      MonthlyReportComponent.loadReport();
+    }
   });
 
   document.addEventListener('app:auth-changed', () => {
@@ -73,9 +88,11 @@ async function bootstrapApp() {
     langSelect.value = LanguageManager.getLanguage();
     langSelect.addEventListener('change', () => {
       LanguageManager.setLanguage(langSelect.value);
-      IncidentFormComponent.populateCenters();
-      MonthlyReportComponent.populateFilters();
-      MonthlyReportComponent.loadReport();
+      if (AppState.activeView === 'form') {
+        IncidentFormComponent.populateCenters();
+      } else if (AppState.activeView === 'report') {
+        MonthlyReportComponent.loadReport();
+      }
     });
   }
 }

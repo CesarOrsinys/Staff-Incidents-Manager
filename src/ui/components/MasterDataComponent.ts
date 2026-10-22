@@ -10,26 +10,43 @@ export class MasterDataComponent {
   private static editingWorkerId: string | null = null;
 
   public static init(): void {
-    this.renderWorkCenters();
-    this.renderWorkers();
     this.setupListeners();
   }
 
-  public static async loadData(): Promise<void> {
+  public static async ensureCentersLoaded(): Promise<void> {
+    if (AppState.workCenters && AppState.workCenters.length > 0) return;
     try {
-      const [resCenters, resWorkers] = await Promise.all([
-        fetch('/api/work-centers'),
-        fetch('/api/workers')
-      ]);
-
-      if (resCenters.ok) AppState.workCenters = await resCenters.json();
-      if (resWorkers.ok) AppState.workers = await resWorkers.json();
-
-      this.renderWorkCenters();
-      this.renderWorkers();
+      const headers: Record<string, string> = {};
+      if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
+      const res = await fetch('/api/work-centers', { headers });
+      if (res.ok) {
+        AppState.workCenters = await res.json();
+      }
     } catch (err) {
-      console.error('Error loading master data:', err);
+      console.error('Error loading work centers:', err);
     }
+  }
+
+  public static async loadData(): Promise<void> {
+    if (!AppState.currentUser) return;
+    await withLoader(async () => {
+      try {
+        const headers: Record<string, string> = {};
+        if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
+        const [resCenters, resWorkers] = await Promise.all([
+          fetch('/api/work-centers', { headers }),
+          fetch('/api/workers', { headers })
+        ]);
+
+        if (resCenters.ok) AppState.workCenters = await resCenters.json();
+        if (resWorkers.ok) AppState.workers = await resWorkers.json();
+
+        this.renderWorkCenters();
+        this.renderWorkers();
+      } catch (err) {
+        console.error('Error loading master data:', err);
+      }
+    }, 'Cargando centros y trabajadores...');
   }
 
   public static renderWorkCenters(): void {
@@ -118,9 +135,11 @@ export class MasterDataComponent {
 
       await withLoader(async () => {
         try {
+          const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+          if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
           const res = await fetch('/api/work-centers', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body: JSON.stringify({ name, code, address, city })
           });
           if (!res.ok) throw new Error('Error al crear el centro');
@@ -147,9 +166,11 @@ export class MasterDataComponent {
 
       await withLoader(async () => {
         try {
+          const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+          if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
           const res = await fetch(`/api/work-centers/${this.editingCenterId}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body: JSON.stringify({ name, code, address, city })
           });
           if (!res.ok) throw new Error('Error al actualizar el centro');
@@ -209,9 +230,11 @@ export class MasterDataComponent {
 
       await withLoader(async () => {
         try {
+          const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+          if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
           const res = await fetch('/api/workers', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body: JSON.stringify({ name, documentId, contractStatus, assignedWorkCenterId })
           });
           if (!res.ok) throw new Error('Error al registrar trabajador');
@@ -239,9 +262,11 @@ export class MasterDataComponent {
 
       await withLoader(async () => {
         try {
+          const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+          if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
           const res = await fetch(`/api/workers/${this.editingWorkerId}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body: JSON.stringify({ name, documentId, contractStatus, assignedWorkCenterId, active })
           });
           if (!res.ok) throw new Error('Error al actualizar trabajador');
@@ -315,7 +340,9 @@ export class MasterDataComponent {
         if (!confirm('¿Seguro que deseas eliminar este centro de trabajo?')) return;
 
         await withLoader(async () => {
-          const res = await fetch(`/api/work-centers/${id}`, { method: 'DELETE' });
+          const headers: Record<string, string> = {};
+          if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
+          const res = await fetch(`/api/work-centers/${id}`, { method: 'DELETE', headers });
           if (res.ok) {
             AppState.workCenters = AppState.workCenters.filter(c => c.id !== id);
             this.renderWorkCenters();
@@ -333,7 +360,9 @@ export class MasterDataComponent {
         if (!confirm('¿Seguro que deseas eliminar este trabajador y sus registros asociados?')) return;
 
         await withLoader(async () => {
-          const res = await fetch(`/api/workers/${id}`, { method: 'DELETE' });
+          const headers: Record<string, string> = {};
+          if (AppState.authToken) headers['Authorization'] = `Bearer ${AppState.authToken}`;
+          const res = await fetch(`/api/workers/${id}`, { method: 'DELETE', headers });
           if (res.ok) {
             AppState.workers = AppState.workers.filter(w => w.id !== id);
             this.renderWorkers();

@@ -145,6 +145,9 @@ export class AuthComponent {
       }
       AppState.currentUser = null;
       AppState.authToken = null;
+      AppState.workCenters = [];
+      AppState.workers = [];
+      AppState.monthlyReport = [];
       AppState.activeView = 'login';
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.removeItem('SIM_AUTH_USER');
