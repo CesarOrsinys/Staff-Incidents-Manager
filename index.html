@@ -711,6 +711,37 @@
       margin-bottom: 18px;
     }
 
+    .date-range-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .form-group-date {
+      margin-bottom: 0 !important;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .form-control-date {
+      min-width: 0 !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      padding: 9px 8px !important;
+      font-size: 0.85rem !important;
+    }
+
+    .form-control-date::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      margin: 0;
+      padding: 0 2px;
+      opacity: 0.8;
+      transform: scale(0.9);
+    }
+
     .step-title {
       font-size: 0.95rem;
       font-weight: 700;
@@ -1293,6 +1324,37 @@
         text-align: right !important;
         flex-direction: row-reverse !important;
       }
+
+      /* Form Card & Step Box Compactness in Mobile (Ensures side-by-side date range fits 100%) */
+      .card, .master-section-card {
+        padding: 16px 12px !important;
+      }
+
+      .step-box {
+        padding: 14px 10px !important;
+      }
+
+      .date-range-grid {
+        gap: 6px !important;
+        margin-bottom: 12px !important;
+      }
+
+      .form-group-date label {
+        font-size: 0.76rem !important;
+        margin-bottom: 3px !important;
+      }
+
+      .form-control-date {
+        padding: 8px 4px !important;
+        font-size: 0.78rem !important;
+        letter-spacing: -0.3px !important;
+      }
+
+      .form-control-date::-webkit-calendar-picker-indicator {
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: scale(0.82) !important;
+      }
     }
   </style>
 </head>
@@ -1492,14 +1554,14 @@
 
               <!-- OPCIÓN A: RANGO DE FECHA -->
               <div id="panel-mode-range">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
-                  <div class="form-group" style="margin-bottom:0;">
+                <div class="date-range-grid">
+                  <div class="form-group form-group-date">
                     <label for="form-range-start-date" data-i18n="txtStartDate">Fecha Inicio</label>
-                    <input type="date" class="form-control" id="form-range-start-date" value="2026-10-14">
+                    <input type="date" class="form-control form-control-date" id="form-range-start-date" value="2026-10-14">
                   </div>
-                  <div class="form-group" style="margin-bottom:0;">
+                  <div class="form-group form-group-date">
                     <label for="form-range-end-date" data-i18n="txtEndDate">Fecha Fin</label>
-                    <input type="date" class="form-control" id="form-range-end-date" value="2026-10-16">
+                    <input type="date" class="form-control form-control-date" id="form-range-end-date" value="2026-10-16">
                   </div>
                 </div>
 
@@ -1526,7 +1588,7 @@
               <div id="panel-mode-single" style="display:none;">
                 <div class="form-group">
                   <label for="form-single-date">Fecha Puntual</label>
-                  <input type="date" class="form-control" id="form-single-date" value="2026-10-06">
+                  <input type="date" class="form-control form-control-date" id="form-single-date" value="2026-10-06">
                 </div>
 
                 <!-- CHECK FIN DE CONTRATO -->
@@ -1544,9 +1606,9 @@
                       <span>Horario de la Jornada (Horas Extras / Suplencia)</span>
                       <span class="hours-badge" id="form-calculated-hours">4.5 horas extras</span>
                     </label>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                      <input type="time" class="form-control" id="form-start-time" value="13:30">
-                      <input type="time" class="form-control" id="form-end-time" value="18:00">
+                    <div class="date-range-grid" style="margin-bottom:0;">
+                      <input type="time" class="form-control form-control-date" id="form-start-time" value="13:30">
+                      <input type="time" class="form-control form-control-date" id="form-end-time" value="18:00">
                     </div>
                   </div>
 
