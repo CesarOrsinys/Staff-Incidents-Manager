@@ -82,7 +82,37 @@ export class AuthComponent {
       }, 'Verificando credenciales...');
     });
 
+    const btnUserAvatar = document.getElementById('btn-user-avatar');
+    const userDropdownMenu = document.getElementById('user-dropdown-menu');
+
+    btnUserAvatar?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!userDropdownMenu) return;
+      const isOpen = userDropdownMenu.style.display === 'block';
+      userDropdownMenu.style.display = isOpen ? 'none' : 'block';
+      btnUserAvatar.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('#user-badge') && userDropdownMenu) {
+        userDropdownMenu.style.display = 'none';
+        btnUserAvatar?.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && userDropdownMenu) {
+        userDropdownMenu.style.display = 'none';
+        btnUserAvatar?.setAttribute('aria-expanded', 'false');
+      }
+    });
+
     btnLogout?.addEventListener('click', () => {
+      if (userDropdownMenu) {
+        userDropdownMenu.style.display = 'none';
+        btnUserAvatar?.setAttribute('aria-expanded', 'false');
+      }
       AppState.currentUser = null;
       AppState.authToken = null;
       AppState.activeView = 'login';
@@ -99,7 +129,7 @@ export class AuthComponent {
   public static updateAuthUI(): void {
     const userBadge = document.getElementById('user-badge');
     const userNameDisplay = document.getElementById('user-name-display');
-    const btnLogout = document.getElementById('btn-logout');
+    const userDropdownMenu = document.getElementById('user-dropdown-menu');
     const viewLogin = document.getElementById('view-login');
     const viewHub = document.getElementById('view-hub');
     const viewForm = document.getElementById('view-form');
@@ -108,10 +138,11 @@ export class AuthComponent {
 
     const sections = [viewLogin, viewHub, viewForm, viewReport, viewMaster];
 
+    if (userDropdownMenu) userDropdownMenu.style.display = 'none';
+
     if (AppState.currentUser) {
       if (userBadge) userBadge.style.display = 'inline-flex';
       if (userNameDisplay) userNameDisplay.textContent = AppState.currentUser.name;
-      if (btnLogout) btnLogout.style.display = 'inline-flex';
 
       // Hide login, show selected active view (default to hub)
       if (viewLogin) viewLogin.classList.remove('active');
@@ -126,7 +157,6 @@ export class AuthComponent {
       });
     } else {
       if (userBadge) userBadge.style.display = 'none';
-      if (btnLogout) btnLogout.style.display = 'none';
 
       // Force login screen only
       sections.forEach(sec => {
