@@ -53,7 +53,7 @@ export class IncidentFormComponent {
       const workerSelect = document.getElementById('form-worker-select') as HTMLSelectElement;
       if (workerSelect) {
         workerSelect.innerHTML = '<option value="">-- Seleccionar Trabajador/a --</option>' +
-          activeWorkers.map(w => `<option value="${w.id}">${w.name} (${w.documentId || 'Sin DNI'})</option>`).join('');
+          activeWorkers.map(w => `<option value="${w.id}">${w.name}</option>`).join('');
       }
 
       this.updateSubstituteOptions();

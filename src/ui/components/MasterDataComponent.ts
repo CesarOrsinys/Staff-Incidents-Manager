@@ -87,7 +87,6 @@ export class MasterDataComponent {
       return `
         <tr>
           <td><strong>${w.name}</strong></td>
-          <td>${w.documentId || '-'}</td>
           <td><span class="badge badge-subtle">${contractLabel}</span></td>
           <td>${center ? center.name : '-'}</td>
           <td><span class="badge ${w.active ? 'badge-success' : 'badge-danger'}">${w.active ? 'Activo' : 'Inactivo'}</span></td>
@@ -224,7 +223,6 @@ export class MasterDataComponent {
     formAddWorker?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = (document.getElementById('input-worker-name') as HTMLInputElement)?.value.trim();
-      const documentId = (document.getElementById('input-worker-dni') as HTMLInputElement)?.value.trim();
       const contractStatus = (document.getElementById('select-worker-contract') as HTMLSelectElement)?.value;
       const assignedWorkCenterId = (document.getElementById('select-worker-center') as HTMLSelectElement)?.value || undefined;
 
@@ -235,7 +233,7 @@ export class MasterDataComponent {
           const res = await fetch('/api/workers', {
             method: 'POST',
             headers,
-            body: JSON.stringify({ name, documentId, contractStatus, assignedWorkCenterId })
+            body: JSON.stringify({ name, contractStatus, assignedWorkCenterId })
           });
           if (!res.ok) throw new Error('Error al registrar trabajador');
           const created = await res.json();
@@ -255,7 +253,6 @@ export class MasterDataComponent {
       if (!this.editingWorkerId) return;
 
       const name = (document.getElementById('input-edit-worker-name') as HTMLInputElement)?.value.trim();
-      const documentId = (document.getElementById('input-edit-worker-dni') as HTMLInputElement)?.value.trim();
       const contractStatus = (document.getElementById('select-edit-worker-contract') as HTMLSelectElement)?.value;
       const assignedWorkCenterId = (document.getElementById('select-edit-worker-center') as HTMLSelectElement)?.value || undefined;
       const active = (document.getElementById('select-edit-worker-active') as HTMLSelectElement)?.value === 'true';
@@ -267,7 +264,7 @@ export class MasterDataComponent {
           const res = await fetch(`/api/workers/${this.editingWorkerId}`, {
             method: 'PUT',
             headers,
-            body: JSON.stringify({ name, documentId, contractStatus, assignedWorkCenterId, active })
+            body: JSON.stringify({ name, contractStatus, assignedWorkCenterId, active })
           });
           if (!res.ok) throw new Error('Error al actualizar trabajador');
           const updated = await res.json();
@@ -316,7 +313,6 @@ export class MasterDataComponent {
 
         this.editingWorkerId = id;
         (document.getElementById('input-edit-worker-name') as HTMLInputElement).value = worker.name;
-        (document.getElementById('input-edit-worker-dni') as HTMLInputElement).value = worker.documentId || '';
         (document.getElementById('select-edit-worker-contract') as HTMLSelectElement).value = worker.contractStatus || 'INDEFINIDO';
 
         const centerSelect = document.getElementById('select-edit-worker-center') as HTMLSelectElement;

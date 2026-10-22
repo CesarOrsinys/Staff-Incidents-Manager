@@ -34,7 +34,6 @@ export class JsonWorkerRepository implements IWorkerRepository {
         {
           id: 'w_aurora',
           name: 'Aurora Beltrán',
-          documentId: '48123456A',
           contractStatus: 'INDEFINIDO',
           assignedWorkCenterId: 'wc_borrull',
           active: true
@@ -42,7 +41,6 @@ export class JsonWorkerRepository implements IWorkerRepository {
         {
           id: 'w_elizabeth',
           name: 'Elizabeth Romero',
-          documentId: '51234567B',
           contractStatus: 'INDEFINIDO',
           assignedWorkCenterId: 'wc_borrull',
           active: true

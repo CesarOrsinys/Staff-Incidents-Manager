@@ -88,7 +88,6 @@ export class SupabaseWorkerRepository implements IWorkerRepository {
     return {
       id: row.id,
       name: row.full_name || `${row.first_name || ''} ${row.last_name || ''}`.trim(),
-      documentId: row.dni,
       email: row.email,
       phone: row.phone,
       contractStatus: row.contract_type || 'INDEFINIDO',

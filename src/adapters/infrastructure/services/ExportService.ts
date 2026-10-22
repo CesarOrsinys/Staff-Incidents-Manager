@@ -75,7 +75,6 @@ export class ExportService implements IExportService {
     summaryRows.push([]);
     summaryRows.push([
       'Trabajador',
-      'DNI/NIE',
       'Contrato',
       'Horas Extra Ganadas',
       'Horas a Deber',
@@ -88,7 +87,6 @@ export class ExportService implements IExportService {
     for (const item of data) {
       summaryRows.push([
         item.worker.name,
-        item.worker.documentId || '-',
         item.worker.contractStatus,
         (item.totalSubstitutionHours || 0) + (item.totalOvertimeHours || 0),
         item.owedHours || 0,
