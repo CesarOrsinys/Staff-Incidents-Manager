@@ -9,9 +9,42 @@ import { MasterDataComponent } from './MasterDataComponent.js';
 
 export class MonthlyReportComponent {
   private static currentFilter: 'all' | 'owed' | 'overtime' = 'all';
+  private static onlyWithIncidents: boolean = true;
+  private static activeViewMode: 'cards' | 'table' = (typeof window !== 'undefined' && window.innerWidth <= 768) ? 'cards' : 'table';
 
   public static init(): void {
     this.setupListeners();
+  }
+
+  private static formatDisplayDate(dateStr: string): string {
+    if (!dateStr) return '';
+    if (dateStr.includes(' al ')) return dateStr;
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0].slice(2)}`;
+    }
+    return dateStr;
+  }
+
+  public static setViewMode(mode: 'cards' | 'table'): void {
+    this.activeViewMode = mode;
+    const btnCards = document.getElementById('btn-view-cards');
+    const btnTable = document.getElementById('btn-view-table');
+    const cardsContainer = document.getElementById('report-cards-container');
+    const tableContainer = document.getElementById('report-table-container');
+
+    btnCards?.classList.toggle('active', mode === 'cards');
+    btnTable?.classList.toggle('active', mode === 'table');
+
+    if (cardsContainer) cardsContainer.style.display = (mode === 'cards') ? 'flex' : 'none';
+    if (tableContainer) tableContainer.style.display = (mode === 'table') ? 'block' : 'none';
+  }
+
+  public static toggleOnlyWithIncidents(): void {
+    this.onlyWithIncidents = !this.onlyWithIncidents;
+    const btnNonEmpty = document.getElementById('filter-btn-non-empty');
+    btnNonEmpty?.classList.toggle('active', this.onlyWithIncidents);
+    this.renderOfficialTable(AppState.monthlyReport);
   }
 
   public static async populateFilters(): Promise<void> {
@@ -130,6 +163,15 @@ export class MonthlyReportComponent {
 
     // Apply active filter
     let filteredData = [...data];
+
+    // Filter out workers without incidents if onlyWithIncidents is true (avoids blank rows on screen)
+    if (this.onlyWithIncidents) {
+      filteredData = filteredData.filter(item => 
+        (item.incidents && item.incidents.length > 0) ||
+        (item.absentDates && item.absentDates.length > 0)
+      );
+    }
+
     if (this.currentFilter === 'owed') {
       filteredData = filteredData.filter(item => 
         (item.owedHours && item.owedHours > 0) || 
@@ -152,20 +194,21 @@ export class MonthlyReportComponent {
 
       // Determine lines to render for this worker
       if (incidents.length === 0) {
-        // If owed filter is active and worker has absences due to substitution
+        // If worker has absences due to substitution or leave
         if (item.absentDates && item.absentDates.length > 0) {
           for (const abs of item.absentDates) {
+            const formattedDate = this.formatDisplayDate(abs.date);
             const desc = abs.substitutedBy ? `Suplido/a por ${abs.substitutedBy}` : abs.reason;
             rowsHtml += `
               <tr class="sheet-data-row">
                 <td class="col-worker font-bold">${workerName}</td>
-                <td class="col-date">${abs.date}</td>
+                <td class="col-date">${formattedDate}</td>
                 <td class="col-incident text-rose">${desc}</td>
               </tr>
             `;
           }
-        } else {
-          // Empty line with worker name (like Rafael Arismendi on physical paper)
+        } else if (!this.onlyWithIncidents) {
+          // Empty line with worker name (only if user explicitly chose to see all workers)
           rowsHtml += `
             <tr class="sheet-data-row">
               <td class="col-worker font-bold">${workerName}</td>
@@ -216,7 +259,7 @@ export class MonthlyReportComponent {
       }
     }
 
-    // Add blank lines at the bottom for manual entries (as requested by user)
+    // Add blank lines for physical paper print only (hidden on interactive screen via CSS)
     const blankRowsCount = 8;
     for (let i = 0; i < blankRowsCount; i++) {
       rowsHtml += `
@@ -229,15 +272,134 @@ export class MonthlyReportComponent {
     }
 
     tbody.innerHTML = rowsHtml;
+
+    // Render mobile cards feed
+    this.renderMobileCards(filteredData);
+
+    // Apply active view mode (cards on mobile, table on desktop)
+    this.setViewMode(this.activeViewMode);
+  }
+
+  private static renderMobileCards(filteredData: MonthlyWorkerReportItem[]): void {
+    const cardsContainer = document.getElementById('report-cards-container');
+    if (!cardsContainer) return;
+
+    let cardsHtml = '';
+    let totalItems = 0;
+
+    for (const item of filteredData) {
+      const workerName = item.worker.name.toUpperCase();
+      const incidents = item.incidents || [];
+      const absentDates = item.absentDates || [];
+
+      for (const inc of incidents) {
+        totalItems++;
+        let dateStr = inc.startDate;
+        if (inc.isRange && inc.endDate && inc.endDate !== inc.startDate) {
+          dateStr = `${inc.startDate.slice(8)} al ${inc.endDate.slice(8)}/${inc.startDate.slice(5, 7)}/${inc.startDate.slice(2, 4)}`;
+        } else if (inc.startDate) {
+          const parts = inc.startDate.split('-');
+          dateStr = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0].slice(2)}` : inc.startDate;
+        }
+
+        let incDesc = inc.observations || '';
+        let badgeClass = 'border-emerald';
+        let typeIcon = '⏱️';
+
+        if (inc.type === IncidentType.SUBSTITUTION) {
+          const subbed = AppState.workers.find(w => w.id === inc.substitutedWorkerId);
+          const subName = subbed ? subbed.name.split(' ')[0] : 'Compañero/a';
+          if (!incDesc) incDesc = `${inc.startTime || ''} a ${inc.endTime || ''} por ${subName}`;
+          badgeClass = 'border-emerald';
+          typeIcon = '🔄';
+        } else if (inc.type === IncidentType.VACATION) {
+          if (!incDesc) incDesc = 'Días de vacaciones pendientes';
+          badgeClass = 'border-amber';
+          typeIcon = '🏖️';
+        } else if (inc.type === IncidentType.PERSONAL_MATTERS) {
+          if (!incDesc) incDesc = 'Día de asuntos propios reglamentario';
+          badgeClass = 'border-blue';
+          typeIcon = '📝';
+        } else if (inc.type === IncidentType.LEAVE_OR_DEATH) {
+          if (!incDesc) incDesc = 'Baja médica por IT con justificante';
+          badgeClass = 'border-rose';
+          typeIcon = '🏥';
+        } else if (inc.type === IncidentType.CONTRACT_END) {
+          if (!incDesc) incDesc = 'Fin de contrato de interinidad';
+          badgeClass = 'border-rose';
+          typeIcon = '📋';
+        }
+
+        cardsHtml += `
+          <div class="incident-mobile-card">
+            <div class="card-top-row">
+              <div class="card-worker-title">
+                <span>👤</span>
+                <span>${workerName}</span>
+              </div>
+              <div class="card-date-badge">
+                <span>📅</span> ${dateStr}
+              </div>
+            </div>
+            <div class="card-incident-body ${badgeClass}">
+              <span>${typeIcon}</span>
+              <span>${incDesc}</span>
+            </div>
+            <div class="card-bottom-actions">
+              <button class="btn-delete-card btn-delete-row" data-id="${inc.id}" title="Eliminar este registro">
+                <span>🗑️</span> <span>Eliminar</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      for (const abs of absentDates) {
+        totalItems++;
+        const formattedDate = this.formatDisplayDate(abs.date);
+        const desc = abs.substitutedBy ? `Suplido/a por ${abs.substitutedBy} (horas a deber)` : abs.reason;
+        cardsHtml += `
+          <div class="incident-mobile-card">
+            <div class="card-top-row">
+              <div class="card-worker-title">
+                <span>👤</span>
+                <span>${workerName}</span>
+              </div>
+              <div class="card-date-badge" style="background:rgba(244,63,94,0.12); color:var(--accent-rose); border-color:rgba(244,63,94,0.25);">
+                <span>📅</span> ${formattedDate}
+              </div>
+            </div>
+            <div class="card-incident-body border-rose">
+              <span>⚠️</span>
+              <span>${desc}</span>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    if (totalItems === 0) {
+      cardsHtml = `
+        <div class="incident-mobile-card text-center text-muted" style="padding:32px 16px; text-align:center;">
+          <p style="font-size:1.1rem; margin-bottom:6px;">📭 Sin incidencias registradas</p>
+          <p style="font-size:0.84rem;">No se encontraron registros activos para los filtros seleccionados.</p>
+        </div>
+      `;
+    }
+
+    cardsContainer.innerHTML = cardsHtml;
   }
 
   private static setupListeners(): void {
     const filterCenter = document.getElementById('report-work-center');
     const filterMonth = document.getElementById('report-month');
     const filterYear = document.getElementById('report-year');
+    const btnNonEmpty = document.getElementById('filter-btn-non-empty');
     const btnAll = document.getElementById('filter-btn-all');
     const btnOwed = document.getElementById('filter-btn-owed');
     const btnOvertime = document.getElementById('filter-btn-overtime');
+    const btnViewCards = document.getElementById('btn-view-cards');
+    const btnViewTable = document.getElementById('btn-view-table');
     const btnPrint = document.getElementById('btn-print-sheet');
     const btnExcel = document.getElementById('btn-download-excel');
     const btnPdf = document.getElementById('btn-download-pdf');
@@ -246,9 +408,13 @@ export class MonthlyReportComponent {
     filterMonth?.addEventListener('change', () => this.loadReport());
     filterYear?.addEventListener('change', () => this.loadReport());
 
+    btnNonEmpty?.addEventListener('click', () => this.toggleOnlyWithIncidents());
     btnAll?.addEventListener('click', () => this.setFilter('all'));
     btnOwed?.addEventListener('click', () => this.setFilter('owed'));
     btnOvertime?.addEventListener('click', () => this.setFilter('overtime'));
+
+    btnViewCards?.addEventListener('click', () => this.setViewMode('cards'));
+    btnViewTable?.addEventListener('click', () => this.setViewMode('table'));
 
     btnPrint?.addEventListener('click', () => window.print());
     btnExcel?.addEventListener('click', () => this.exportExcel());
@@ -257,8 +423,9 @@ export class MonthlyReportComponent {
     // Delegated incident deletion
     document.addEventListener('click', async (e) => {
       const target = e.target as HTMLElement;
-      if (target.classList.contains('btn-delete-row')) {
-        const id = target.getAttribute('data-id');
+      if (target.classList.contains('btn-delete-row') || target.closest('.btn-delete-row')) {
+        const btn = target.classList.contains('btn-delete-row') ? target : target.closest('.btn-delete-row') as HTMLElement;
+        const id = btn.getAttribute('data-id');
         if (!id) return;
         if (!confirm('¿Eliminar este registro del parte?')) return;
 

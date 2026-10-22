@@ -973,6 +973,180 @@
       background: rgba(239, 68, 68, 0.15);
     }
 
+    /* OCULTAR FILAS EN BLANCO EN PANTALLA (SOLO IMPRESIÓN FÍSICA EN PAPEL) */
+    .sheet-blank-row {
+      display: none !important;
+    }
+    @media print {
+      .sheet-blank-row {
+        display: table-row !important;
+      }
+    }
+
+    /* CONMUTADOR DE VISTAS (TARJETAS MÓVIL vs TABLA OFICIAL) */
+    .view-mode-switcher {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 3px;
+      gap: 3px;
+    }
+    .view-mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .view-mode-btn:hover {
+      color: var(--text-main);
+    }
+    .view-mode-btn.active {
+      background: var(--accent-blue);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(14, 165, 233, 0.35);
+    }
+
+    /* VISTA DE TARJETAS PARA DISPOSITIVOS MÓVILES */
+    .mobile-cards-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .incident-mobile-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .incident-mobile-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .card-worker-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-date-badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      white-space: nowrap;
+    }
+
+    .card-incident-body {
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--text-main);
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-blue);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .card-incident-body.border-rose {
+      border-left-color: var(--accent-rose);
+      color: #fda4af;
+    }
+    .card-incident-body.border-emerald {
+      border-left-color: var(--accent-emerald);
+      color: #6ee7b7;
+    }
+    .card-incident-body.border-amber {
+      border-left-color: #f59e0b;
+      color: #fde68a;
+    }
+    .card-incident-body.border-blue {
+      border-left-color: #38bdf8;
+      color: #bae6fd;
+    }
+
+    .card-bottom-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding-top: 4px;
+    }
+
+    .btn-delete-card {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: var(--accent-rose);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-delete-card:hover {
+      background: rgba(244, 63, 94, 0.25);
+      color: #ffffff;
+    }
+
+    .mobile-scroll-hint {
+      display: none;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-align: right;
+    }
+
+    @media (max-width: 768px) {
+      .sheet-wrapper {
+        padding: 10px 8px !important;
+        border-radius: 8px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .official-table {
+        min-width: 580px !important;
+      }
+
+      .mobile-scroll-hint {
+        display: block;
+      }
+    }
+
     /* LOADER OVERLAY - MATHEMATICALLY CENTERED ACROSS DESKTOP & MOBILE */
     .app-loader-backdrop {
       position: fixed !important;
@@ -1686,6 +1860,9 @@
 
         <!-- FILTROS SOLICITADOS -->
         <div class="report-filters-group">
+          <button class="filter-pill active" id="filter-btn-non-empty" title="Ocultar trabajadores sin incidencias registradas">
+            <span>👁️</span> <span>Solo con incidencias</span>
+          </button>
           <button class="filter-pill active" id="filter-btn-all">
             <span>📋</span> <span>Todos</span>
           </button>
@@ -1694,6 +1871,16 @@
           </button>
           <button class="filter-pill pill-overtime" id="filter-btn-overtime">
             <span>⏱️</span> <span data-i18n="filterOvertime">Personas con horas extras</span>
+          </button>
+        </div>
+
+        <!-- CONMUTADOR DE VISTAS (TARJETAS MÓVIL vs TABLA OFICIAL) -->
+        <div class="view-mode-switcher">
+          <button type="button" class="view-mode-btn" id="btn-view-cards" title="Vista adaptada a pantalla móvil sin desplazamiento lateral">
+            <span>📱</span> <span>Tarjetas</span>
+          </button>
+          <button type="button" class="view-mode-btn active" id="btn-view-table" title="Vista tabla formato físico">
+            <span>📄</span> <span>Tabla Oficial</span>
           </button>
         </div>
       </div>
@@ -1708,29 +1895,35 @@
         </div>
       </div>
 
-      <!-- LA TABLA DEL PARTE OFICIAL (FORMATO HOJA FÍSICA DE 3 COLUMNAS) -->
-      <div class="sheet-wrapper">
-        <table class="official-table">
-          <thead>
-            <!-- FILA 1: 2 COLUMNAS (OCTUBRE | HORAS E INCIDENCIAS EDIFICIO JUEZ BORRULL) -->
-            <tr class="row-header-title">
-              <th class="col-title-month" id="sheet-header-month">OCTUBRE</th>
-              <th class="col-title-center" colspan="2" id="sheet-header-center-title">
-                HORAS E INCIDENCIAS EDIFICIO JUEZ BORRULL
-              </th>
-            </tr>
-            <!-- FILA 2: 3 COLUMNAS (TRABAJADOR/@ | FECHA | INCIDENCIA Horas Extr / DC) -->
-            <tr class="row-header-cols">
-              <th class="th-worker">TRABAJADOR/@</th>
-              <th class="th-date">FECHA</th>
-              <th class="th-incident">INCIDENCIA Horas Extr / DC</th>
-            </tr>
-          </thead>
-          <!-- FILA 3 EN ADELANTE: DATOS REALES Y FILAS EN BLANCO PARA RELLENAR -->
-          <tbody id="official-sheet-tbody">
-            <!-- Renderizado dinámico idéntico al papel -->
-          </tbody>
-        </table>
+      <!-- VISTA MÓVIL: TARJETAS DINÁMICAS SIN SCROLL HORIZONTAL -->
+      <div id="report-cards-container" class="mobile-cards-feed" style="display:none;"></div>
+
+      <!-- VISTA EN TABLA: PARTE OFICIAL (FORMATO HOJA FÍSICA) -->
+      <div id="report-table-container">
+        <div class="mobile-scroll-hint">👈 Desliza horizontalmente para ver la tabla completa 👉</div>
+        <div class="sheet-wrapper">
+          <table class="official-table">
+            <thead>
+              <!-- FILA 1: 2 COLUMNAS (OCTUBRE | HORAS E INCIDENCIAS EDIFICIO JUEZ BORRULL) -->
+              <tr class="row-header-title">
+                <th class="col-title-month" id="sheet-header-month">OCTUBRE</th>
+                <th class="col-title-center" colspan="2" id="sheet-header-center-title">
+                  HORAS E INCIDENCIAS EDIFICIO JUEZ BORRULL
+                </th>
+              </tr>
+              <!-- FILA 2: 3 COLUMNAS (TRABAJADOR/@ | FECHA | INCIDENCIA Horas Extr / DC) -->
+              <tr class="row-header-cols">
+                <th class="th-worker">TRABAJADOR/@</th>
+                <th class="th-date">FECHA</th>
+                <th class="th-incident">INCIDENCIA Horas Extr / DC</th>
+              </tr>
+            </thead>
+            <!-- FILA 3 EN ADELANTE: DATOS REALES Y FILAS EN BLANCO PARA RELLENAR -->
+            <tbody id="official-sheet-tbody">
+              <!-- Renderizado dinámico idéntico al papel -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
