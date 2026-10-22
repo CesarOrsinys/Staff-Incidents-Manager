@@ -100,8 +100,8 @@ npm install
 ```bash
 npm run dev
 ```
-- **Frontend (Vite):** `http://localhost:4000`
-- **Backend API (Express):** `http://localhost:4001` (con proxy automático `/api` desde el puerto 4000)
+- **Frontend (Vite):** `http://localhost:7070`
+- **Backend API (Express):** `http://localhost:7071` (con proxy automático `/api` desde el puerto 7070)
 
 ### 3. Ejecutar suite de pruebas unitarias
 ```bash
