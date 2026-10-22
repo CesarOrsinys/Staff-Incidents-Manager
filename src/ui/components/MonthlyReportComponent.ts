@@ -232,8 +232,8 @@ export class MonthlyReportComponent {
           if (!incDesc) {
             if (inc.type === IncidentType.SUBSTITUTION) {
               const subbed = AppState.workers.find(w => w.id === inc.substitutedWorkerId);
-              const subName = subbed ? subbed.name.split(' ')[0] : 'Compañero';
-              incDesc = `${inc.startTime || ''}-${inc.endTime || ''} Por ${subName}.`;
+              const subName = subbed ? subbed.name : 'compañero/a';
+              incDesc = `${inc.startTime || ''} a ${inc.endTime || ''} por ${subName}`;
             } else if (inc.type === IncidentType.VACATION) {
               incDesc = 'Vacaciones';
             } else if (inc.type === IncidentType.PERSONAL_MATTERS) {
@@ -306,7 +306,7 @@ export class MonthlyReportComponent {
 
         if (inc.type === IncidentType.SUBSTITUTION) {
           const subbed = AppState.workers.find(w => w.id === inc.substitutedWorkerId);
-          const subName = subbed ? subbed.name.split(' ')[0] : 'Compañero/a';
+          const subName = subbed ? subbed.name : 'compañero/a';
           if (!incDesc) incDesc = `${inc.startTime || ''} a ${inc.endTime || ''} por ${subName}`;
           badgeClass = 'border-emerald';
           typeIcon = '🔄';

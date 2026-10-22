@@ -163,6 +163,7 @@ describe('Staff Incidents Manager - Domain & Use Cases Suite', () => {
       assert.ok(created.id);
       assert.strictEqual(created.totalHours, 4.5);
       assert.strictEqual(created.substitutedWorkerId, 'w_aurora');
+      assert.strictEqual(created.observations, '13:30 a 18:00 por Aurora Belmonte');
     });
 
     it('Should group monthly report items by worker with aggregated metrics', async () => {

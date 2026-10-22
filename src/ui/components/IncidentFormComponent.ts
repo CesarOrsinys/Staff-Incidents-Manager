@@ -70,6 +70,37 @@ export class IncidentFormComponent {
 
     substituteSelect.innerHTML = '<option value="">-- Seleccionar persona a la que se le hizo suplencia --</option>' +
       availableForSub.map(w => `<option value="${w.id}">${w.name}</option>`).join('');
+
+    this.updateObservationsPreview();
+  }
+
+  public static updateObservationsPreview(): void {
+    const startTimeInput = document.getElementById('form-start-time') as HTMLInputElement;
+    const endTimeInput = document.getElementById('form-end-time') as HTMLInputElement;
+    const subSelect = document.getElementById('form-substituted-worker') as HTMLSelectElement;
+    const obsInput = document.getElementById('form-single-observations') as HTMLInputElement;
+    const previewTextEl = document.getElementById('form-obs-preview-text');
+
+    const s = startTimeInput?.value || '13:30';
+    const e = endTimeInput?.value || '18:00';
+    const subWorkerId = subSelect?.value;
+    const subWorker = AppState.workers.find(w => w.id === subWorkerId);
+    let subName = subWorker ? subWorker.name : '';
+    if (!subName && subSelect && subSelect.selectedIndex > 0) {
+      subName = subSelect.options[subSelect.selectedIndex]?.text || '';
+    }
+    if (!subName) {
+      subName = 'Adriana Valencia';
+    }
+
+    const defaultFormat = `${s} a ${e} por ${subName}`;
+
+    if (obsInput && !obsInput.value) {
+      obsInput.placeholder = `Por defecto: ${defaultFormat}`;
+    }
+    if (previewTextEl) {
+      previewTextEl.textContent = defaultFormat;
+    }
   }
 
   private static setupDateModeSwitching(): void {
@@ -124,8 +155,21 @@ export class IncidentFormComponent {
       }
     };
 
-    startTimeInput?.addEventListener('input', updateHours);
-    endTimeInput?.addEventListener('input', updateHours);
+    startTimeInput?.addEventListener('input', () => {
+      updateHours();
+      this.updateObservationsPreview();
+    });
+    endTimeInput?.addEventListener('input', () => {
+      updateHours();
+      this.updateObservationsPreview();
+    });
+
+    const subSelect = document.getElementById('form-substituted-worker') as HTMLSelectElement;
+    subSelect?.addEventListener('change', () => {
+      this.updateObservationsPreview();
+    });
+
+    this.updateObservationsPreview();
   }
 
   private static setupListeners(): void {
@@ -256,8 +300,9 @@ export class IncidentFormComponent {
         }
 
         const subWorkerObj = AppState.workers.find(w => w.id === substitutedWorkerId);
-        const subName = subWorkerObj ? subWorkerObj.name.split(' ')[0] : 'compañero';
+        const subName = subWorkerObj ? subWorkerObj.name : 'compañero/a';
         const hours = calculateHours(startTime, endTime);
+        const defaultObs = `${startTime} a ${endTime} por ${subName}`;
 
         payload = {
           ...payload,
@@ -268,7 +313,7 @@ export class IncidentFormComponent {
           endTime,
           totalHours: hours,
           substitutedWorkerId,
-          observations: generalObs || `${startTime}-${endTime} Por ${subName}.`
+          observations: generalObs || defaultObs
         };
       }
     }
@@ -299,6 +344,9 @@ export class IncidentFormComponent {
         if (endTimeInput) endTimeInput.value = '';
         const subSelect = document.getElementById('form-substituted-worker') as HTMLSelectElement;
         if (subSelect) subSelect.value = '';
+        const obsInput = document.getElementById('form-single-observations') as HTMLInputElement;
+        if (obsInput) obsInput.value = '';
+        this.updateObservationsPreview();
         const contractEndCheck = document.getElementById('form-contract-end-check') as HTMLInputElement;
         if (contractEndCheck) {
           contractEndCheck.checked = false;

@@ -90,6 +90,9 @@ export class GetMonthlyReportUseCase {
         } else if (inc.type === IncidentType.SUBSTITUTION) {
           totalSubstitutionHours += inc.totalHours || 0;
           const subbedWorker = inc.substitutedWorkerId ? workerMap.get(inc.substitutedWorkerId) : null;
+          if (!inc.observations && inc.startTime && inc.endTime) {
+            inc.observations = `${inc.startTime} a ${inc.endTime} por ${subbedWorker ? subbedWorker.name : 'compañero/a'}`;
+          }
           overtimeDetails.push({
             date: inc.startDate,
             hours: inc.totalHours || 0,

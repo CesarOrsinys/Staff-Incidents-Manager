@@ -37,11 +37,12 @@ export class RegisterIncidentUseCase {
     }
 
     // 4. Validate Substituted Worker exists if type is SUBSTITUTION
+    let substituted: any = null;
     if (validData.type === IncidentType.SUBSTITUTION) {
       if (!validData.substitutedWorkerId) {
         throw new Error('errSubstitutedWorkerRequired');
       }
-      const substituted = await this.workerRepo.getById(validData.substitutedWorkerId);
+      substituted = await this.workerRepo.getById(validData.substitutedWorkerId);
       if (!substituted) {
         throw new Error('errSubstitutedWorkerNotFound');
       }
@@ -58,7 +59,13 @@ export class RegisterIncidentUseCase {
     const periodYear = validData.periodYear || parsedStart.getFullYear();
     const periodMonth = validData.periodMonth || (parsedStart.getMonth() + 1);
 
-    // 7. Persist incident
+    // 7. Determine observations (standard format default if empty)
+    let observations = validData.observations?.trim() || null;
+    if (!observations && validData.type === IncidentType.SUBSTITUTION && validData.startTime && validData.endTime && substituted) {
+      observations = `${validData.startTime} a ${validData.endTime} por ${substituted.name}`;
+    }
+
+    // 8. Persist incident
     const created = await this.incidentRepo.create({
       workCenterId: validData.workCenterId,
       periodYear,
@@ -72,7 +79,7 @@ export class RegisterIncidentUseCase {
       endTime: validData.endTime || null,
       totalHours,
       substitutedWorkerId: validData.type === IncidentType.SUBSTITUTION ? validData.substitutedWorkerId : null,
-      observations: validData.observations?.trim() || null,
+      observations,
       createdBy: validData.createdBy || 'Gerente'
     });
 
