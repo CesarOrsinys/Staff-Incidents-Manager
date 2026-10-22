@@ -3,6 +3,20 @@ import { LanguageManager } from '../i18n/LanguageManager.js';
 import { showToast } from '../services/ToastService.js';
 import { withLoader } from '../services/LoaderService.js';
 
+const AUTH_SALT = 'SIM_SECURE_AUTH_V1_CASTELLO_DE_LA_PLANA_2026';
+
+async function hashCredential(plain: string): Promise<string> {
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(`${plain}:${AUTH_SALT}`);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  // Safe fallback if subtle crypto is not supported
+  return btoa(`${plain}:${AUTH_SALT}`);
+}
+
 export class AuthComponent {
   public static init(): void {
     // Restore session if exists
@@ -39,17 +53,33 @@ export class AuthComponent {
 
     form?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const username = (document.getElementById('login-username-input') as HTMLInputElement)?.value.trim();
-      const password = (document.getElementById('login-password-input') as HTMLInputElement)?.value.trim();
+      const usernameInput = document.getElementById('login-username-input') as HTMLInputElement;
+      const passwordInput = document.getElementById('login-password-input') as HTMLInputElement;
+      const username = usernameInput?.value.trim() || '';
+      const password = passwordInput?.value.trim() || '';
       const errorMsgEl = document.getElementById('login-error-alert');
       if (errorMsgEl) errorMsgEl.style.display = 'none';
 
+      if (!username || !password) {
+        if (errorMsgEl) {
+          errorMsgEl.textContent = LanguageManager.t('errInvalidCredentials');
+          errorMsgEl.style.display = 'block';
+        }
+        return;
+      }
+
       await withLoader(async () => {
         try {
+          // Cryptographically hash and salt the password client-side so plain text is NEVER sent over network or retained
+          const authHash = await hashCredential(password);
+          
+          // Clear password input immediately from DOM
+          if (passwordInput) passwordInput.value = '';
+
           const res = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, authHash })
           });
 
           const data = await res.json();

@@ -7,11 +7,12 @@ export const authRouter = Router();
 
 authRouter.post('/login', async (req: Request, res: Response) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, authHash } = req.body;
     const authRepo = RepositoryContainer.getAuthRepository();
     const useCase = new AuthenticateManagerUseCase(authRepo);
 
-    const user = await useCase.execute(username, password);
+    const credential = authHash || password;
+    const user = await useCase.execute(username, credential);
     const token = generateToken({
       id: user.id,
       username: user.username,

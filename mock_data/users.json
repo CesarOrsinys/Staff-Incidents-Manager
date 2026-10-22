@@ -5,7 +5,6 @@
     "username": "gerente",
     "email": "gerente@empresa.com",
     "passwordHash": "$2b$10$epkJ1hXgYjC5g5R8KxQk8e0bQoRz.U3U3p9x0wKzZgq9v9Z5t4u7y",
-    "plainPasswordFallback": "admin123",
     "role": "MANAGER",
     "active": true,
     "createdAt": "2026-01-15T08:00:00.000Z"
@@ -16,7 +15,6 @@
     "username": "admin",
     "email": "admin@empresa.com",
     "passwordHash": "$2b$10$epkJ1hXgYjC5g5R8KxQk8e0bQoRz.U3U3p9x0wKzZgq9v9Z5t4u7y",
-    "plainPasswordFallback": "admin123",
     "role": "MANAGER",
     "active": true,
     "createdAt": "2026-02-01T09:30:00.000Z"
