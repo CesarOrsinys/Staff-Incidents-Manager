@@ -5,6 +5,24 @@ import { MasterDataComponent } from './ui/components/MasterDataComponent.js';
 import { IncidentFormComponent } from './ui/components/IncidentFormComponent.js';
 import { MonthlyReportComponent } from './ui/components/MonthlyReportComponent.js';
 
+export function navigateTo(targetView: 'login' | 'hub' | 'form' | 'report' | 'master'): void {
+  AppState.activeView = targetView;
+  const sections = document.querySelectorAll('.app-view-section');
+  sections.forEach(sec => {
+    if (sec.id === `view-${targetView}`) {
+      sec.classList.add('active');
+    } else {
+      sec.classList.remove('active');
+    }
+  });
+
+  if (targetView === 'report') {
+    MonthlyReportComponent.loadReport();
+  } else if (targetView === 'form') {
+    IncidentFormComponent.populateCenters();
+  }
+}
+
 async function bootstrapApp() {
   // 1. Initialize i18n
   LanguageManager.init();
@@ -12,23 +30,23 @@ async function bootstrapApp() {
   // 2. Setup theme switching
   setupTheme();
 
-  // 3. Initialize Auth
-  AuthComponent.init();
-
-  // 4. Load Master Data (Work Centers & Workers)
+  // 3. Load Master Data (Work Centers & Workers)
   await MasterDataComponent.loadData();
   MasterDataComponent.init();
 
-  // 5. Initialize Form & Reports
+  // 4. Initialize Form & Reports
   IncidentFormComponent.init();
   MonthlyReportComponent.init();
 
-  // 6. Navigation Tabs
+  // 5. Initialize Auth (determines whether to show login or hub)
+  AuthComponent.init();
+
+  // 6. Navigation Actions (Hub cards & back buttons)
   setupNavigation();
 
   // 7. Global reactive listeners
   document.addEventListener('app:master-data-changed', () => {
-    IncidentFormComponent.populateSelectors();
+    IncidentFormComponent.populateCenters();
     MonthlyReportComponent.populateFilters();
     MonthlyReportComponent.loadReport();
   });
@@ -42,7 +60,11 @@ async function bootstrapApp() {
   });
 
   document.addEventListener('app:auth-changed', () => {
-    MonthlyReportComponent.loadReport();
+    if (AppState.currentUser) {
+      navigateTo('hub');
+    } else {
+      navigateTo('login');
+    }
   });
 
   // Language selector
@@ -51,7 +73,7 @@ async function bootstrapApp() {
     langSelect.value = LanguageManager.getLanguage();
     langSelect.addEventListener('change', () => {
       LanguageManager.setLanguage(langSelect.value);
-      IncidentFormComponent.populateSelectors();
+      IncidentFormComponent.populateCenters();
       MonthlyReportComponent.populateFilters();
       MonthlyReportComponent.loadReport();
     });
@@ -74,29 +96,15 @@ function setupTheme(): void {
 }
 
 function setupNavigation(): void {
-  const navButtons = document.querySelectorAll('.nav-tab-btn');
-  const sections = document.querySelectorAll('.app-view-section');
-
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const targetView = btn.getAttribute('data-view');
-      if (!targetView) return;
-
-      navButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      sections.forEach(sec => {
-        if (sec.id === `view-${targetView}`) {
-          sec.classList.add('active');
-        } else {
-          sec.classList.remove('active');
-        }
-      });
-
-      if (targetView === 'report') {
-        MonthlyReportComponent.loadReport();
+  // Global navigate buttons
+  document.addEventListener('click', (e) => {
+    const target = (e.target as HTMLElement).closest('[data-navigate]') as HTMLElement;
+    if (target) {
+      const dest = target.getAttribute('data-navigate') as any;
+      if (dest) {
+        navigateTo(dest);
       }
-    });
+    }
   });
 }
 

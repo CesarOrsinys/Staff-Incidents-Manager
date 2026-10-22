@@ -13,11 +13,20 @@ export class AuthComponent {
         try {
           AppState.currentUser = JSON.parse(savedUser);
           AppState.authToken = savedToken;
-        } catch (e) {
+          AppState.activeView = 'hub';
+        } catch {
           sessionStorage.removeItem('SIM_AUTH_USER');
           sessionStorage.removeItem('SIM_AUTH_TOKEN');
+          AppState.currentUser = null;
+          AppState.activeView = 'login';
         }
+      } else {
+        AppState.currentUser = null;
+        AppState.activeView = 'login';
       }
+    } else {
+      AppState.currentUser = null;
+      AppState.activeView = 'login';
     }
 
     this.updateAuthUI();
@@ -25,38 +34,14 @@ export class AuthComponent {
   }
 
   public static setupListeners(): void {
-    const btnOpenLogin = document.getElementById('btn-open-login');
-    const modal = document.getElementById('login-modal');
-    const btnCloseModal = document.getElementById('btn-close-login');
-    const form = document.getElementById('login-form') as HTMLFormElement;
+    const form = document.getElementById('main-login-form') as HTMLFormElement;
     const btnLogout = document.getElementById('btn-logout');
-
-    btnOpenLogin?.addEventListener('click', () => {
-      if (modal) modal.style.display = 'flex';
-      const usernameInput = document.getElementById('input-username') as HTMLInputElement;
-      if (usernameInput) {
-        usernameInput.value = 'gerente';
-        const passInput = document.getElementById('input-password') as HTMLInputElement;
-        if (passInput) passInput.value = 'admin123';
-        usernameInput.focus();
-      }
-    });
-
-    btnCloseModal?.addEventListener('click', () => {
-      if (modal) modal.style.display = 'none';
-    });
-
-    modal?.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.style.display = 'none';
-      }
-    });
 
     form?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const username = (document.getElementById('input-username') as HTMLInputElement)?.value.trim();
-      const password = (document.getElementById('input-password') as HTMLInputElement)?.value.trim();
-      const errorMsgEl = document.getElementById('login-error-msg');
+      const username = (document.getElementById('login-username-input') as HTMLInputElement)?.value.trim();
+      const password = (document.getElementById('login-password-input') as HTMLInputElement)?.value.trim();
+      const errorMsgEl = document.getElementById('login-error-alert');
       if (errorMsgEl) errorMsgEl.style.display = 'none';
 
       await withLoader(async () => {
@@ -74,13 +59,13 @@ export class AuthComponent {
 
           AppState.currentUser = data.user;
           AppState.authToken = data.token;
+          AppState.activeView = 'hub';
 
           if (typeof sessionStorage !== 'undefined') {
             sessionStorage.setItem('SIM_AUTH_USER', JSON.stringify(data.user));
             sessionStorage.setItem('SIM_AUTH_TOKEN', data.token);
           }
 
-          if (modal) modal.style.display = 'none';
           this.updateAuthUI();
 
           const welcomeMsg = LanguageManager.t('toastLoginSuccess', { name: data.user.name });
@@ -100,6 +85,7 @@ export class AuthComponent {
     btnLogout?.addEventListener('click', () => {
       AppState.currentUser = null;
       AppState.authToken = null;
+      AppState.activeView = 'login';
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.removeItem('SIM_AUTH_USER');
         sessionStorage.removeItem('SIM_AUTH_TOKEN');
@@ -111,23 +97,46 @@ export class AuthComponent {
   }
 
   public static updateAuthUI(): void {
-    const btnOpenLogin = document.getElementById('btn-open-login');
     const userBadge = document.getElementById('user-badge');
     const userNameDisplay = document.getElementById('user-name-display');
     const btnLogout = document.getElementById('btn-logout');
-    const lockOverlay = document.getElementById('auth-lock-overlay');
+    const viewLogin = document.getElementById('view-login');
+    const viewHub = document.getElementById('view-hub');
+    const viewForm = document.getElementById('view-form');
+    const viewReport = document.getElementById('view-report');
+    const viewMaster = document.getElementById('view-master');
+
+    const sections = [viewLogin, viewHub, viewForm, viewReport, viewMaster];
 
     if (AppState.currentUser) {
-      if (btnOpenLogin) btnOpenLogin.style.display = 'none';
       if (userBadge) userBadge.style.display = 'inline-flex';
       if (userNameDisplay) userNameDisplay.textContent = AppState.currentUser.name;
       if (btnLogout) btnLogout.style.display = 'inline-flex';
-      if (lockOverlay) lockOverlay.style.display = 'none';
+
+      // Hide login, show selected active view (default to hub)
+      if (viewLogin) viewLogin.classList.remove('active');
+      const targetViewId = `view-${AppState.activeView === 'login' ? 'hub' : AppState.activeView}`;
+      sections.forEach(sec => {
+        if (!sec) return;
+        if (sec.id === targetViewId) {
+          sec.classList.add('active');
+        } else if (sec.id !== 'view-login') {
+          sec.classList.remove('active');
+        }
+      });
     } else {
-      if (btnOpenLogin) btnOpenLogin.style.display = 'inline-flex';
       if (userBadge) userBadge.style.display = 'none';
       if (btnLogout) btnLogout.style.display = 'none';
-      if (lockOverlay) lockOverlay.style.display = 'flex';
+
+      // Force login screen only
+      sections.forEach(sec => {
+        if (!sec) return;
+        if (sec.id === 'view-login') {
+          sec.classList.add('active');
+        } else {
+          sec.classList.remove('active');
+        }
+      });
     }
   }
 }

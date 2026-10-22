@@ -3,102 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Staff Incidents Manager | Digitalización de Partes de Horas</title>
-  <meta name="description" content="Sistema de gestión y digitalización de partes de horas e incidencias de personal con exportación mensual a Excel y PDF.">
+  <title>Staff Incidents Manager | Partes de Horas e Incidencias</title>
+  <meta name="description" content="Digitalización ágil del parte de horas e incidencias de personal con cálculo automático de suplencias e informes oficiales.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    /* ======================================================== */
-    /* COLOR PALETTES & DESIGN SYSTEM TOKENS                   */
-    /* ======================================================== */
     :root, [data-theme="dark"] {
-      --bg-base: #0a0f1d;
-      --bg-surface: rgba(16, 24, 40, 0.88);
-      --bg-card: rgba(22, 33, 56, 0.7);
-      --bg-card-hover: rgba(30, 45, 75, 0.85);
+      --bg-base: #090d16;
+      --bg-surface: rgba(15, 23, 42, 0.92);
+      --bg-card: rgba(26, 38, 64, 0.7);
+      --bg-card-hover: rgba(35, 52, 88, 0.85);
       --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-focus: #3b82f6;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
-      --accent-blue: #3b82f6;
-      --accent-indigo: #6366f1;
-      --accent-cyan: #06b6d4;
-      --accent-amber: #f59e0b;
-      --accent-emerald: #10b981;
-      --accent-rose: #f43f5e;
-      --accent-purple: #a855f7;
-      --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --radius-full: 9999px;
-      --glass-blur: blur(14px);
-      --shadow-glow: 0 4px 20px rgba(59, 130, 246, 0.25);
-    }
-
-    [data-theme="light"] {
-      --bg-base: #f1f5f9;
-      --bg-surface: rgba(255, 255, 255, 0.92);
-      --bg-card: #ffffff;
-      --bg-card-hover: #f8fafc;
-      --border-subtle: #e2e8f0;
-      --border-focus: #2563eb;
-      --text-main: #0f172a;
-      --text-muted: #475569;
-      --text-dim: #94a3b8;
-      --accent-blue: #2563eb;
-      --accent-indigo: #4f46e5;
-      --accent-cyan: #0891b2;
-      --accent-amber: #d97706;
-      --accent-emerald: #059669;
-      --accent-rose: #e11d48;
-      --accent-purple: #9333ea;
-      --accent-gradient: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
-      --shadow-glow: 0 4px 15px rgba(37, 99, 235, 0.15);
-    }
-
-    [data-theme="slate"] {
-      --bg-base: #0f172a;
-      --bg-surface: rgba(30, 41, 59, 0.9);
-      --bg-card: #1e293b;
-      --bg-card-hover: #334155;
-      --border-subtle: #334155;
       --border-focus: #38bdf8;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
       --accent-blue: #38bdf8;
-      --accent-indigo: #818cf8;
-      --accent-cyan: #22d3ee;
-      --accent-amber: #fbbf24;
-      --accent-emerald: #34d399;
-      --accent-rose: #fb7185;
-      --accent-purple: #c084fc;
-      --accent-gradient: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-      --shadow-glow: 0 4px 20px rgba(56, 189, 248, 0.2);
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+      --accent-gradient: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --glass-blur: blur(14px);
+      --shadow-glow: 0 4px 20px rgba(56, 189, 248, 0.25);
+      --official-green: #205c3b;
+      --official-green-header: #2e7d32;
+      --official-green-sub: #388e3c;
+      --official-green-zebra: #e8f5e9;
     }
 
-    [data-theme="ocean"] {
-      --bg-base: #041c2c;
-      --bg-surface: rgba(8, 43, 67, 0.88);
-      --bg-card: rgba(12, 60, 94, 0.7);
-      --bg-card-hover: rgba(16, 78, 122, 0.85);
-      --border-subtle: rgba(14, 165, 233, 0.2);
-      --border-focus: #0ea5e9;
-      --text-main: #f0fdf4;
-      --text-muted: #93c5fd;
-      --text-dim: #60a5fa;
-      --accent-blue: #0ea5e9;
-      --accent-indigo: #38bdf8;
-      --accent-cyan: #06b6d4;
-      --accent-amber: #fbbf24;
-      --accent-emerald: #10b981;
-      --accent-rose: #f43f5e;
-      --accent-purple: #818cf8;
-      --accent-gradient: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
-      --shadow-glow: 0 4px 20px rgba(14, 165, 233, 0.25);
+    [data-theme="light"] {
+      --bg-base: #f1f5f9;
+      --bg-surface: rgba(255, 255, 255, 0.95);
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --border-subtle: #cbd5e1;
+      --border-focus: #0284c7;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      --accent-blue: #0284c7;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --accent-purple: #9333ea;
+      --accent-gradient: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      --shadow-glow: 0 4px 15px rgba(2, 132, 199, 0.15);
+      --official-green: #2e7d32;
+      --official-green-header: #2e7d32;
+      --official-green-sub: #388e3c;
+      --official-green-zebra: #f1f8e9;
     }
 
     * {
@@ -114,20 +73,19 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
       line-height: 1.5;
     }
 
-    /* TOP HEADER */
+    /* HEADER */
     header {
-      height: 72px;
+      height: 68px;
       background: var(--bg-surface);
       backdrop-filter: var(--glass-blur);
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 28px;
+      padding: 0 24px;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -142,8 +100,8 @@
     }
 
     .brand-logo {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       background: var(--accent-gradient);
       border-radius: var(--radius-md);
       display: flex;
@@ -154,525 +112,600 @@
     }
 
     .brand h1 {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 800;
       letter-spacing: -0.5px;
-      color: var(--text-main);
     }
 
     .brand-tagline {
       font-size: 0.72rem;
       color: var(--text-muted);
-      font-weight: 500;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .custom-select {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.05);
       color: var(--text-main);
-      padding: 6px 14px;
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-full);
-      font-size: 0.82rem;
-      font-weight: 600;
+      padding: 6px 12px;
+      font-size: 0.8rem;
       outline: none;
       cursor: pointer;
-      transition: border-color 0.2s;
-    }
-    .custom-select:hover {
-      border-color: var(--border-focus);
     }
 
     .user-pill {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(59, 130, 246, 0.12);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      padding: 5px 14px;
+      gap: 6px;
+      padding: 6px 12px;
       border-radius: var(--radius-full);
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
       font-size: 0.82rem;
       font-weight: 600;
       color: var(--accent-blue);
-    }
-
-    .btn-auth {
-      background: var(--accent-gradient);
-      color: #fff;
-      border: none;
-      padding: 8px 18px;
-      border-radius: var(--radius-full);
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: var(--shadow-glow);
-      transition: transform 0.15s, opacity 0.15s;
-    }
-    .btn-auth:hover {
-      transform: translateY(-1px);
-      opacity: 0.95;
     }
 
     .btn-logout {
       background: rgba(244, 63, 94, 0.12);
       border: 1px solid rgba(244, 63, 94, 0.3);
       color: var(--accent-rose);
-      padding: 6px 14px;
+      padding: 6px 12px;
       border-radius: var(--radius-full);
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       transition: all 0.2s;
     }
     .btn-logout:hover {
-      background: var(--accent-rose);
-      color: #fff;
+      background: rgba(244, 63, 94, 0.25);
     }
 
-    /* SUB-BAR NAVIGATION (Directly below header, pushes main down cleanly) */
-    .app-subbar {
-      width: 100%;
-      background: var(--bg-surface);
-      backdrop-filter: var(--glass-blur);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 8px 24px;
-      position: sticky;
-      top: 72px;
-      z-index: 95;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
-    }
-
-    .nav-tabs-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 5px 8px;
-      border-radius: var(--radius-full);
-      border: 1px solid var(--border-subtle);
-    }
-
-    .nav-tab-btn {
-      background: none;
-      border: none;
-      padding: 7px 18px;
-      border-radius: var(--radius-full);
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.25s ease;
-    }
-    .nav-tab-btn:hover {
-      color: var(--text-main);
-      background: rgba(255, 255, 255, 0.06);
-    }
-    .nav-tab-btn.active {
-      background: var(--accent-gradient);
-      color: #fff;
-      box-shadow: var(--shadow-glow);
-    }
-
-    /* MAIN CONTAINER */
+    /* MAIN CONTAINER & VIEWS */
     main {
       flex: 1;
-      max-width: 1400px;
+      padding: 24px;
+      max-width: 1180px;
       width: 100%;
       margin: 0 auto;
-      padding: 24px 28px;
     }
 
     .app-view-section {
       display: none;
+      animation: fadeIn 0.25s ease-out;
     }
     .app-view-section.active {
       display: block;
-      animation: fadeIn 0.25s ease;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* CARDS & PANELS */
+    /* TOP BAR WITH BACK BUTTON */
+    .view-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn-back {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateX(-2px);
+    }
+
+    /* CARDS */
     .card {
-      background: var(--bg-card);
+      background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    /* ======================================================== */
+    /* 1. LOGIN SCREEN STYLING                                  */
+    /* ======================================================== */
+    .login-container {
+      min-height: calc(80vh - 68px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+      text-align: center;
+    }
+
+    .login-icon-wrap {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      background: var(--accent-gradient);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .login-card h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .login-card p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
       margin-bottom: 24px;
     }
 
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .card-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* KEYBOARD HINT BANNER */
-    .keyboard-hint-box {
-      background: rgba(59, 130, 246, 0.08);
-      border: 1px solid rgba(59, 130, 246, 0.25);
-      border-radius: var(--radius-md);
-      padding: 12px 18px;
-      font-size: 0.85rem;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .kbd {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--accent-blue);
-      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
-    }
-
-    /* DESKTOP FORM LAYOUT & BALANCED CARDS */
-    .form-wrapper {
-      max-width: 1040px;
-      margin: 0 auto;
-    }
-
-    .form-two-col-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    @media (max-width: 820px) {
-      .form-two-col-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-    }
-
-    .form-section-box {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .form-section-title {
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--accent-blue);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
     .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+      margin-bottom: 18px;
+      text-align: left;
     }
 
     .form-group label {
+      display: block;
       font-size: 0.82rem;
       font-weight: 600;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      color: var(--text-main);
+      margin-bottom: 6px;
     }
 
     .form-control {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-      outline: none;
-      transition: all 0.2s;
       width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
+
     .form-control:focus {
       border-color: var(--border-focus);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-    }
-
-    .hours-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: var(--radius-full);
-      font-size: 0.78rem;
-      font-weight: 700;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-dim);
-    }
-    .hours-badge-active {
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--accent-amber);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-
-    .form-actions {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 24px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border-subtle);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
     }
 
     .btn-primary {
       background: var(--accent-gradient);
       color: #fff;
       border: none;
-      padding: 11px 24px;
-      border-radius: var(--radius-full);
-      font-size: 0.92rem;
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       box-shadow: var(--shadow-glow);
       transition: all 0.2s;
     }
     .btn-primary:hover {
+      opacity: 0.95;
       transform: translateY(-1px);
-      box-shadow: 0 6px 25px rgba(59, 130, 246, 0.4);
     }
 
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.08);
       color: var(--text-main);
       border: 1px solid var(--border-subtle);
-      padding: 11px 20px;
+      border-radius: var(--radius-md);
+      padding: 8px 16px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .alert-box {
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.84rem;
+      margin-bottom: 16px;
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: var(--accent-rose);
+    }
+
+    /* ======================================================== */
+    /* 2. HUB DASHBOARD STYLING (2 MAIN OPTIONS)               */
+    /* ======================================================== */
+    .hub-container {
+      max-width: 860px;
+      margin: 40px auto;
+      text-align: center;
+    }
+
+    .hub-header {
+      margin-bottom: 36px;
+    }
+    .hub-header h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .hub-header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .hub-tiles-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .hub-tile {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hub-tile:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-blue);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+      background: var(--bg-card-hover);
+    }
+
+    .hub-tile-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-glow);
+    }
+    .hub-tile-icon.icon-form {
+      background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+    }
+    .hub-tile-icon.icon-report {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    }
+
+    .hub-tile h3 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .hub-tile p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 20px;
+    }
+
+    .hub-tile-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
       border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+
+    /* ======================================================== */
+    /* 3. NUEVA INCIDENCIA (STEPPED/GUIDED FORM)                */
+    /* ======================================================== */
+    .form-card-container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .step-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .step-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent-blue);
+    }
+
+    .mode-toggle-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .btn-mode {
+      flex: 1;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      border-radius: var(--radius-md);
       font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .btn-mode.active {
+      background: var(--accent-gradient);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .hours-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: var(--accent-amber);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+
+    /* ======================================================== */
+    /* 4. VER INCIDENCIAS (OFFICIAL PHYSICAL SHEET TABLE)       */
+    /* ======================================================== */
+    .report-filters-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding: 16px 20px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+    }
+
+    .report-filters-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.84rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-secondary:hover {
+    .filter-pill:hover {
       background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+    }
+    .filter-pill.active {
+      background: var(--accent-blue);
+      color: #fff;
+      border-color: var(--accent-blue);
+    }
+    .filter-pill.active.pill-owed {
+      background: var(--accent-rose);
+      border-color: var(--accent-rose);
+    }
+    .filter-pill.active.pill-overtime {
+      background: var(--accent-emerald);
+      border-color: var(--accent-emerald);
     }
 
-    /* KPI STATS GRID */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .kpi-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 18px 20px;
+    .report-metrics-row {
       display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transition: transform 0.2s;
-    }
-    .kpi-card:hover {
-      transform: translateY(-2px);
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
     }
 
-    .kpi-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-    }
-
-    .kpi-val {
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-
-    /* TABLES & REPORT VIEW */
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
+    .metric-chip {
+      padding: 8px 14px;
       border-radius: var(--radius-md);
-      border: 1px solid var(--border-subtle);
+      font-size: 0.86rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chip-owed {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: var(--accent-rose);
+    }
+    .chip-overtime {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-emerald);
     }
 
-    table {
+    /* THE OFFICIAL 3-COLUMN PHYSICAL SHEET FORMAT */
+    .sheet-wrapper {
+      background: #ffffff;
+      color: #111827;
+      border-radius: var(--radius-md);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+      padding: 24px;
+      overflow-x: auto;
+    }
+
+    .official-table {
       width: 100%;
       border-collapse: collapse;
+      border: 2px solid #1e3a29;
+      font-size: 0.86rem;
+    }
+
+    /* FIRST HEADER ROW: 2 COLUMNS */
+    .official-table thead tr.row-header-title th {
+      background: var(--official-green-header);
+      color: #ffffff;
+      padding: 12px 14px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      border: 1px solid #143522;
+      text-transform: uppercase;
+    }
+    .col-title-month {
+      width: 28%;
       text-align: left;
+      font-size: 1.1rem;
+    }
+    .col-title-center {
+      width: 72%;
+      text-align: center;
+      font-size: 1.05rem;
+    }
+
+    /* SECOND HEADER ROW: 3 COLUMNS */
+    .official-table thead tr.row-header-cols th {
+      background: var(--official-green-sub);
+      color: #ffffff;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid #143522;
+      text-align: left;
+    }
+    .th-worker { width: 28%; }
+    .th-date { width: 22%; }
+    .th-incident { width: 50%; }
+
+    /* DATA ROWS */
+    .official-table tbody td {
+      border: 1px solid #cbd5e1;
+      padding: 8px 12px;
+      vertical-align: middle;
+      color: #1e293b;
+    }
+
+    .official-table tbody tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .official-table .col-worker {
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 0.2px;
+    }
+    .official-table .col-date {
+      color: #334155;
+      white-space: nowrap;
+    }
+    .official-table .col-incident {
+      color: #0f172a;
+      position: relative;
+    }
+
+    .sheet-blank-row td {
+      height: 34px;
+      background: #ffffff !important;
+      border-bottom: 1px dashed #94a3b8;
+    }
+
+    .incident-entry-text {
       font-size: 0.88rem;
     }
 
-    th {
-      background: rgba(255, 255, 255, 0.03);
-      padding: 12px 16px;
-      font-weight: 700;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border-subtle);
-      vertical-align: middle;
-    }
-
-    tr:hover td {
-      background: var(--bg-card-hover);
-    }
-
-    /* BADGES */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 9px;
-      border-radius: var(--radius-full);
-      font-size: 0.74rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-    .badge-subtle { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); border: 1px solid var(--border-subtle); }
-    .badge-amber { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
-    .badge-blue { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.3); }
-    .badge-emerald { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-purple { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border: 1px solid rgba(168, 85, 247, 0.3); }
-    .badge-rose { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); border: 1px solid rgba(244, 63, 94, 0.3); }
-    .badge-dark { background: rgba(15, 23, 42, 0.6); color: #cbd5e1; border: 1px solid #475569; }
-    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
-    .badge-danger { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); }
-
-    /* INCIDENTS IN ROW PILLS */
-    .incidents-container {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-width: 480px;
-    }
-
-    .incident-pill-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.03);
-      padding: 4px 10px;
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .incident-desc {
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .btn-xs-danger {
+    .btn-delete-row {
       background: none;
       border: none;
-      color: var(--accent-rose);
-      cursor: pointer;
+      color: #ef4444;
       font-size: 0.8rem;
+      cursor: pointer;
+      float: right;
       padding: 0 4px;
       border-radius: 4px;
     }
-    .btn-xs-danger:hover {
-      background: rgba(244, 63, 94, 0.2);
+    .btn-delete-row:hover {
+      background: rgba(239, 68, 68, 0.15);
     }
 
-    /* MODALS */
-    .modal-backdrop {
+    /* LOADER OVERLAY */
+    .app-loader-backdrop {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.65);
       backdrop-filter: blur(8px);
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
-      padding: 16px;
-    }
-
-    .modal-box {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      width: 100%;
-      max-width: 460px;
-      padding: 28px;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
-      position: relative;
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .modal-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-
-    .btn-close-modal {
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-    .btn-close-modal:hover {
-      color: var(--text-main);
+      z-index: 10000;
     }
 
     /* TOASTS */
@@ -703,264 +736,61 @@
     .toast-success { border-color: rgba(16, 185, 129, 0.4); color: var(--accent-emerald); }
     .toast-danger { border-color: rgba(244, 63, 94, 0.4); color: var(--accent-rose); }
     .toast-warning { border-color: rgba(245, 158, 11, 0.4); color: var(--accent-amber); }
-    .toast-info { border-color: rgba(59, 130, 246, 0.4); color: var(--accent-blue); }
+    .toast-info { border-color: rgba(56, 189, 248, 0.4); color: var(--accent-blue); }
 
-    .animate-slide-in {
-      animation: slideIn 0.25s ease-out;
-    }
-    .animate-fade-out {
-      animation: fadeOut 0.25s ease-in forwards;
-    }
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes fadeOut {
-      from { opacity: 1; transform: scale(1); }
-      to { opacity: 0; transform: scale(0.95); }
-    }
-
-    /* LOADER OVERLAY */
-    .app-loader-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-    }
-
-    .loader-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .loader-spinner {
-      width: 44px;
-      height: 44px;
-      border: 3px solid rgba(59, 130, 246, 0.2);
-      border-top-color: var(--accent-blue);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .loader-text {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    /* AUTH LOCK OVERLAY */
-    .auth-lock-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(10, 15, 29, 0.85);
-      backdrop-filter: blur(6px);
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      z-index: 50;
-      border-radius: var(--radius-lg);
-      padding: 30px;
-      text-align: center;
-    }
-
-    /* RESPONSIVE DESIGN FOR TABLET & MOBILE */
-    @media (max-width: 768px) {
-      header {
-        height: auto;
-        padding: 10px 14px;
-        flex-direction: column;
-        gap: 10px;
-        width: 100%;
-        box-sizing: border-box;
+    /* PRINT CSS FOR PHYSICAL SHEET FORMAT */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
       }
-
-      .brand {
-        width: 100%;
-        justify-content: flex-start;
-        gap: 10px;
+      header, .view-top-bar, .report-filters-bar, .report-metrics-row, .no-print, .btn-delete-row {
+        display: none !important;
       }
-
-      .brand-logo {
-        width: 36px;
-        height: 36px;
-        flex-shrink: 0;
-      }
-
-      .brand h1 {
-        font-size: 1.05rem;
-        line-height: 1.2;
-      }
-
-      .brand-tagline {
-        font-size: 0.68rem;
-      }
-
-      .header-actions {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: nowrap;
-      }
-
-      .custom-select {
-        padding: 6px 8px;
-        font-size: 0.76rem;
-        flex: 1;
-        min-width: 0;
-        max-width: 110px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-
-      #lang-selector {
-        max-width: 76px;
-        flex: 0 0 76px;
-      }
-
-      .btn-auth {
-        padding: 6px 12px;
-        font-size: 0.78rem;
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
-
-      .btn-logout {
-        padding: 6px 10px;
-        font-size: 0.76rem;
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
-
-      .user-pill {
-        padding: 4px 10px;
-        font-size: 0.76rem;
-        max-width: 110px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .app-subbar {
-        top: auto;
-        position: relative;
-        padding: 8px 10px;
-        width: 100%;
-        box-sizing: border-box;
-      }
-
-      .nav-tabs-container {
-        width: 100%;
-        display: flex;
-        gap: 4px;
-        padding: 4px;
-        background: rgba(255, 255, 255, 0.04);
-        border-radius: var(--radius-full);
-        justify-content: space-between;
-        align-items: center;
-        box-sizing: border-box;
-      }
-
-      .nav-tab-btn {
-        flex: 1;
-        min-width: 0;
-        padding: 7px 4px;
-        font-size: 0.74rem;
-        font-weight: 600;
-        justify-content: center;
-        text-align: center;
-        white-space: nowrap;
-        gap: 4px;
-        border-radius: var(--radius-full);
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
       main {
-        padding: 12px 10px 40px;
-        width: 100%;
-        box-sizing: border-box;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
-
-      .card {
-        padding: 16px 12px;
-        margin-bottom: 16px;
-        border-radius: var(--radius-md);
+      .sheet-wrapper {
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
       }
-
-      .card-header {
-        margin-bottom: 14px;
+      .official-table {
+        border: 2px solid #000000 !important;
       }
-
-      .card-title {
-        font-size: 1.05rem;
+      .official-table thead tr.row-header-title th,
+      .official-table thead tr.row-header-cols th {
+        background: #2e7d32 !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
-
-      .keyboard-hint-box {
-        padding: 10px 12px;
-        font-size: 0.78rem;
-        margin-bottom: 14px;
-        gap: 8px;
-      }
-
-      .form-section-box {
-        padding: 14px 12px;
-        gap: 12px;
-        border-radius: var(--radius-md);
-      }
-
-      .form-control {
-        padding: 8px 10px;
-        font-size: 0.86rem;
-      }
-
-      .form-actions {
-        flex-direction: column-reverse;
-        gap: 8px;
-        width: 100%;
-      }
-
-      .form-actions button {
-        width: 100%;
-        justify-content: center;
+      .sheet-blank-row td {
+        height: 38px !important;
+        border-bottom: 1px solid #64748b !important;
       }
     }
 
-    @media (max-width: 380px) {
-      .nav-tab-btn {
-        font-size: 0.7rem;
-        padding: 6px 2px;
+    @media (max-width: 768px) {
+      .hub-tiles-grid {
+        grid-template-columns: 1fr;
       }
-      .custom-select {
-        max-width: 85px;
-        font-size: 0.72rem;
-        padding: 4px 6px;
+      main {
+        padding: 14px;
       }
-      .btn-auth {
-        padding: 5px 8px;
-        font-size: 0.74rem;
+      .card {
+        padding: 20px 14px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- TOP HEADER -->
+  <!-- HEADER -->
   <header>
-    <a href="#" class="brand">
+    <a href="#" class="brand" data-navigate="hub">
       <div class="brand-logo">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
@@ -979,8 +809,8 @@
       <select class="custom-select" id="theme-selector" title="Tema">
         <option value="dark">🌙 Oscuro</option>
         <option value="light">☀️ Claro</option>
-        <option value="slate">💼 Ejecutivo Slate</option>
-        <option value="ocean">🌊 Océano Profundo</option>
+        <option value="slate">💼 Slate</option>
+        <option value="ocean">🌊 Océano</option>
       </select>
 
       <!-- Language Selector -->
@@ -998,239 +828,251 @@
         <span id="user-name-display">Gerente</span>
       </div>
 
-      <!-- Login / Logout Buttons -->
-      <button class="btn-auth" id="btn-open-login"><span>🔐</span> <span data-i18n="navLogin">Acceso Gerencia</span></button>
-      <button class="btn-logout" id="btn-logout" style="display:none;"><span>🚪</span> <span data-i18n="navLogout">Cerrar Sesión</span></button>
+      <!-- Logout Button -->
+      <button class="btn-logout" id="btn-logout" style="display:none;">
+        <span>🚪</span> <span data-i18n="navLogout">Cerrar Sesión</span>
+      </button>
     </div>
   </header>
 
-  <!-- SUB-BAR NAVIGATION -->
-  <nav class="app-subbar" aria-label="Navegación de secciones">
-    <div class="nav-tabs-container">
-      <button class="nav-tab-btn active" data-view="form"><span>📝</span> <span data-i18n="navForm">Entrada Rápida</span></button>
-      <button class="nav-tab-btn" data-view="report"><span>📊</span> <span data-i18n="navReport">Informe Mensual</span></button>
-      <button class="nav-tab-btn" data-view="master"><span>⚙️</span> <span data-i18n="navMaster">Maestros</span></button>
-    </div>
-  </nav>
-
-  <!-- MAIN VIEWS -->
   <main>
 
-    <!-- ========================================== -->
-    <!-- 1. VISTA FORMULARIO ENTRADA RÁPIDA         -->
-    <!-- ========================================== -->
-    <section class="app-view-section active" id="view-form">
-      <div class="form-wrapper">
-        <div class="card" style="position:relative;">
-          
-          <div class="card-header">
-            <div class="card-title">
-              <span>📝</span>
-              <span data-i18n="navForm">Entrada Rápida</span>
-            </div>
-            <div>
-              <span class="badge badge-subtle">
-                Registros en sesión: <strong id="session-entries-count" style="margin-left:4px; color:var(--accent-blue);">0</strong>
-              </span>
-            </div>
-          </div>
+    <!-- ======================================================== -->
+    <!-- 1. PANTALLA INICIAL: LOGIN OBLIGATORIO                   -->
+    <!-- ======================================================== -->
+    <section class="app-view-section active" id="view-login">
+      <div class="login-container">
+        <div class="login-card">
+          <div class="login-icon-wrap">🔐</div>
+          <h2 data-i18n="navLogin">Acceso Gerencia</h2>
+          <p>Introduce tus credenciales para acceder al sistema de partes.</p>
 
-          <div class="keyboard-hint-box">
-            <div>
-              <span data-i18n="txtKeyboardHint">Consejo de volcado masivo: Rellena los datos y pulsa Enter para guardar y pasar al siguiente inmediatamente.</span>
-            </div>
-            <div>
-              <span class="kbd">Enter ↵</span>
-            </div>
-          </div>
+          <div class="alert-box" id="login-error-alert" style="display:none;"></div>
 
-          <form id="incident-entry-form">
-            <div class="form-two-col-grid">
-              
-              <!-- PANEL IZQUIERDO: Contexto y Personal -->
-              <div class="form-section-box">
-                <div class="form-section-title">
-                  <span>🏛️</span>
-                  <span>Contexto de la Ubicación y Personal</span>
-                </div>
-
-                <!-- Contexto Global: Centro de Trabajo -->
-                <div class="form-group">
-                  <label for="form-work-center">
-                    <span data-i18n="txtCenter">Centro de Trabajo</span>
-                    <span class="text-xs text-muted">(Contexto fijado)</span>
-                  </label>
-                  <select class="form-control" id="form-work-center" required></select>
-                </div>
-
-                <!-- Contexto Global: Periodo Mes y Año -->
-                <div class="form-group">
-                  <label>
-                    <span>Periodo del Parte</span>
-                    <span class="text-xs text-muted">(Mes / Año)</span>
-                  </label>
-                  <div style="display:flex; gap:8px;">
-                    <select class="form-control" id="form-period-month" style="flex:1;">
-                      <option value="1">1 - Enero</option>
-                      <option value="2">2 - Febrero</option>
-                      <option value="3">3 - Marzo</option>
-                      <option value="4">4 - Abril</option>
-                      <option value="5">5 - Mayo</option>
-                      <option value="6">6 - Junio</option>
-                      <option value="7">7 - Julio</option>
-                      <option value="8">8 - Agosto</option>
-                      <option value="9">9 - Septiembre</option>
-                      <option value="10">10 - Octubre</option>
-                      <option value="11">11 - Noviembre</option>
-                      <option value="12">12 - Diciembre</option>
-                    </select>
-                    <input type="number" class="form-control" id="form-period-year" style="width:96px;" min="2020" max="2035" value="2026">
-                  </div>
-                </div>
-
-                <!-- Trabajador Autocompletado -->
-                <div class="form-group">
-                  <label for="form-worker-search">
-                    <span data-i18n="txtWorker">Trabajador</span>
-                    <span class="text-xs text-muted">(Autocompletar por nombre)</span>
-                  </label>
-                  <input type="text" class="form-control" id="form-worker-search" list="workers-datalist" placeholder="Escribe el nombre del trabajador..." required autocomplete="off">
-                  <datalist id="workers-datalist"></datalist>
-                </div>
-
-                <!-- Tipo de Registro -->
-                <div class="form-group">
-                  <label for="form-incident-type" data-i18n="txtIncidentType">Tipo de Registro</label>
-                  <select class="form-control" id="form-incident-type">
-                    <option value="SUBSTITUTION">🏃 Sustitución</option>
-                    <option value="VACATION">🏖️ Vacaciones</option>
-                    <option value="PERSONAL_MATTERS">📋 Asuntos Propios</option>
-                    <option value="LEAVE_OR_DEATH">🏥 Baja / Fallecimiento</option>
-                    <option value="CONTRACT_END">📄 Fin de Contrato</option>
-                    <option value="OVERTIME">⏰ Horas Extra</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- PANEL DERECHO: Jornada e Incidencia -->
-              <div class="form-section-box">
-                <div class="form-section-title">
-                  <span>⏱️</span>
-                  <span>Jornada y Registro de Incidencia</span>
-                </div>
-
-                <!-- Selector de Fecha(s): Día suelto o Rango -->
-                <div class="form-group">
-                  <label>
-                    <span data-i18n="txtDates">Fecha(s)</span>
-                    <span style="font-weight:normal; font-size:0.75rem; display:inline-flex; align-items:center; gap:4px;">
-                      <input type="checkbox" id="form-is-range">
-                      <label for="form-is-range" style="cursor:pointer;" data-i18n="txtDateRange">Rango de fechas</label>
-                    </span>
-                  </label>
-                  <div style="display:flex; gap:8px;">
-                    <input type="date" class="form-control" id="form-start-date" required>
-                    <div id="wrap-end-date" style="display:none; flex:1;">
-                      <input type="date" class="form-control" id="form-end-date">
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Condicional 1: Horario (Solo si Sustitución u Horas Extra) -->
-                <div class="form-group" id="conditional-schedule-row">
-                  <label>
-                    <span data-i18n="txtSchedule">Horario (Inicio - Fin)</span>
-                    <span class="hours-badge" id="form-calculated-hours">0 h</span>
-                  </label>
-                  <div style="display:flex; gap:8px;">
-                    <input type="time" class="form-control" id="form-start-time" placeholder="13:30">
-                    <input type="time" class="form-control" id="form-end-time" placeholder="18:00">
-                  </div>
-                </div>
-
-                <!-- Condicional 2: Trabajador Sustituido (Solo si Sustitución) -->
-                <div class="form-group" id="conditional-substituted-row">
-                  <label for="form-substituted-worker" data-i18n="txtSubstitutedWorker">Trabajador Sustituido (¿A quién cubre?)</label>
-                  <select class="form-control" id="form-substituted-worker"></select>
-                </div>
-
-                <!-- Observaciones -->
-                <div class="form-group">
-                  <label for="form-observations" data-i18n="txtObservations">Observaciones (Opcional)</label>
-                  <input type="text" class="form-control" id="form-observations" placeholder="Detalles adicionales, motivo médico o autorización...">
-                </div>
-              </div>
-
+          <form id="main-login-form">
+            <div class="form-group">
+              <label for="login-username-input">Usuario Gestor</label>
+              <input type="text" class="form-control" id="login-username-input" value="gerente" required autocomplete="username">
             </div>
 
-            <div class="form-actions">
-              <button type="submit" class="btn-secondary" id="btn-save-only" data-i18n="btnSaveOnly">Guardar Incidencia</button>
-              <button type="button" class="btn-primary" id="btn-save-and-next">
-                <span data-i18n="btnFastSave">Guardar y Nuevo (Enter)</span>
-                <span>↵</span>
-              </button>
+            <div class="form-group">
+              <label for="login-password-input">Contraseña</label>
+              <input type="password" class="form-control" id="login-password-input" value="admin123" required autocomplete="current-password">
             </div>
+
+            <button type="submit" class="btn-primary" style="width:100%; margin-top:8px;">
+              <span>🚀</span> <span>Iniciar Sesión</span>
+            </button>
           </form>
-
         </div>
       </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- 2. VISTA INFORME MENSUAL AGRUPADO          -->
-    <!-- ========================================== -->
-    <section class="app-view-section" id="view-report">
-      
-      <!-- KPI Stats Summary -->
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label" data-i18n="txtSummaryHours">Horas Extra Acumuladas</div>
-          <div class="kpi-val" id="metric-overtime" style="color:var(--accent-amber);">0.0 h</div>
+    <!-- ======================================================== -->
+    <!-- 2. PANTALLA DASHBOARD: 2 GRANDES OPCIONES                -->
+    <!-- ======================================================== -->
+    <section class="app-view-section" id="view-hub">
+      <div class="hub-container">
+        <div class="hub-header">
+          <h2>Panel Principal de Gestión</h2>
+          <p>Selecciona la operación que deseas realizar:</p>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label" data-i18n="txtSummarySubs">Horas Sustitución</div>
-          <div class="kpi-val" id="metric-subs" style="color:var(--accent-blue);">0.0 h</div>
+
+        <div class="hub-tiles-grid">
+          <!-- OPCIÓN 1: NUEVA INCIDENCIA -->
+          <div class="hub-tile" data-navigate="form">
+            <div class="hub-tile-icon icon-form">📝</div>
+            <h3 data-i18n="btnNewIncident">Nueva Incidencia</h3>
+            <p>Registrar partes de asistencia, ausencias, fin de contrato o suplencias con cálculo automático de horas.</p>
+            <div class="hub-tile-badge">
+              <span>👉</span> <span>Entrar al Registro</span>
+            </div>
+          </div>
+
+          <!-- OPCIÓN 2: VER INCIDENCIAS Y REPORTES -->
+          <div class="hub-tile" data-navigate="report">
+            <div class="hub-tile-icon icon-report">📊</div>
+            <h3 data-i18n="btnViewIncidents">Ver Incidencias</h3>
+            <p>Consultar quién debe horas o tiene horas extras, imprimir informe o descargar la plantilla física oficial.</p>
+            <div class="hub-tile-badge">
+              <span>📋</span> <span>Consultar Partes</span>
+            </div>
+          </div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label" data-i18n="txtSummaryVacations">Días Vacaciones</div>
-          <div class="kpi-val" id="metric-vacations" style="color:var(--accent-emerald);">0 d</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label" data-i18n="txtSummaryPersonal">Días Asuntos Propios</div>
-          <div class="kpi-val" id="metric-personal" style="color:var(--accent-purple);">0 d</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label" data-i18n="txtSummaryLeave">Días Baja / Defunción</div>
-          <div class="kpi-val" id="metric-leave" style="color:var(--accent-rose);">0 d</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Personal con Registros</div>
-          <div class="kpi-val" id="metric-workers" style="color:var(--text-main);">0</div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 3. PANTALLA NUEVA INCIDENCIA (FLUJO GUIADO)              -->
+    <!-- ======================================================== -->
+    <section class="app-view-section" id="view-form">
+      <div class="view-top-bar">
+        <button class="btn-back" data-navigate="hub">
+          <span>←</span> <span data-i18n="btnBackHub">Volver al Menú Principal</span>
+        </button>
+        <div class="badge badge-subtle">
+          <span>📝 Formulario de Entrada Rápida</span>
         </div>
       </div>
 
-      <!-- Filters & Export Toolbar -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <span>📊</span>
-            <span>Informe Mensual Consolidado por Trabajador</span>
-          </div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn-primary" id="btn-export-excel" style="padding:8px 18px; font-size:0.84rem;">
-              <span>📥</span>
-              <span data-i18n="btnExportExcel">Exportar Excel</span>
-            </button>
-            <button class="btn-secondary" id="btn-export-pdf" style="padding:8px 18px; font-size:0.84rem;">
-              <span>📄</span>
-              <span data-i18n="btnExportPdf">Exportar PDF</span>
-            </button>
-          </div>
-        </div>
+      <div class="form-card-container">
+        <div class="card">
+          <form id="incident-entry-form">
+            
+            <!-- PASO 1: CENTRO DE TRABAJO (EDIFICIO JUEZ BORRULL POR DEFECTO) -->
+            <div class="step-box">
+              <div class="step-title">
+                <span>1️⃣</span> <span>Centro de Trabajo</span>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="form-work-center" data-i18n="txtCenter">Centro de Trabajo</label>
+                <select class="form-control" id="form-work-center" required></select>
+              </div>
+            </div>
 
-        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px;">
-          <select class="form-control" id="filter-work-center" style="max-width:240px;"></select>
-          <select class="form-control" id="filter-month" style="max-width:140px;">
+            <!-- PASO 2: TRABAJADOR ASIGNADO -->
+            <div class="step-box">
+              <div class="step-title">
+                <span>2️⃣</span> <span>Trabajador / Personal Asignado</span>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="form-worker-select" data-i18n="txtWorker">Trabajador</label>
+                <select class="form-control" id="form-worker-select" required></select>
+              </div>
+            </div>
+
+            <!-- PASO 3: SELECCIÓN DE FECHA & INCIDENCIA -->
+            <div class="step-box">
+              <div class="step-title">
+                <span>3️⃣</span> <span>Tipo de Fecha e Incidencia</span>
+              </div>
+
+              <!-- BOTONES RANGO O FECHA PUNTUAL -->
+              <div class="mode-toggle-group">
+                <button type="button" class="btn-mode active" id="btn-mode-range">
+                  <span>📅</span> <span data-i18n="txtDateRange">Rango de fecha</span>
+                </button>
+                <button type="button" class="btn-mode" id="btn-mode-single">
+                  <span>⏱️</span> <span data-i18n="txtSingleDay">Fecha puntual</span>
+                </button>
+              </div>
+
+              <!-- OPCIÓN A: RANGO DE FECHA -->
+              <div id="panel-mode-range">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label for="form-range-start-date" data-i18n="txtStartDate">Fecha Inicio</label>
+                    <input type="date" class="form-control" id="form-range-start-date" value="2026-10-14">
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label for="form-range-end-date" data-i18n="txtEndDate">Fecha Fin</label>
+                    <input type="date" class="form-control" id="form-range-end-date" value="2026-10-16">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="form-reason-select" data-i18n="txtReason">Motivo de la Ausencia</label>
+                  <select class="form-control" id="form-reason-select">
+                    <option value="ASUNTOS_PROPIOS">Asuntos propios</option>
+                    <option value="VACACIONES">Vacaciones</option>
+                    <option value="FALLECIMIENTO">Fallecimiento familiar</option>
+                    <option value="MEDICO">Asunto médico</option>
+                    <option value="BAJA">Baja médica / Incapacidad temporal</option>
+                    <option value="PATERNIDAD">Permiso de paternidad / maternidad</option>
+                    <option value="OTRO" data-i18n="txtReasonOther">Otro (Especificar)</option>
+                  </select>
+                </div>
+
+                <div class="form-group" id="wrap-reason-custom" style="display:none;">
+                  <label for="form-reason-custom">Especificar Motivo Personalizado</label>
+                  <input type="text" class="form-control" id="form-reason-custom" placeholder="Ej: 1 día de vacaciones pendiente">
+                </div>
+              </div>
+
+              <!-- OPCIÓN B: FECHA PUNTUAL -->
+              <div id="panel-mode-single" style="display:none;">
+                <div class="form-group">
+                  <label for="form-single-date">Fecha Puntual</label>
+                  <input type="date" class="form-control" id="form-single-date" value="2026-10-06">
+                </div>
+
+                <!-- CHECK FIN DE CONTRATO -->
+                <div class="form-group" style="background:rgba(255,255,255,0.04); padding:10px 14px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
+                  <label style="cursor:pointer; display:flex; align-items:center; gap:8px; margin-bottom:0;">
+                    <input type="checkbox" id="form-contract-end-check" style="width:18px; height:18px; cursor:pointer;">
+                    <span style="font-weight:700; color:var(--text-main);" data-i18n="txtContractEndCheck">¿Fin de contrato?</span>
+                  </label>
+                </div>
+
+                <!-- HORARIO Y SUPLENCIA (SI NO ES FIN DE CONTRATO) -->
+                <div id="panel-single-schedule">
+                  <div class="form-group">
+                    <label>
+                      <span>Horario de la Jornada (Horas Extras / Suplencia)</span>
+                      <span class="hours-badge" id="form-calculated-hours">4.5 horas extras</span>
+                    </label>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                      <input type="time" class="form-control" id="form-start-time" value="13:30">
+                      <input type="time" class="form-control" id="form-end-time" value="18:00">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="form-substituted-worker" data-i18n="txtSubstitutedPerson">¿A quién se le hizo suplencia?</label>
+                    <select class="form-control" id="form-substituted-worker"></select>
+                    <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">
+                      ℹ️ La persona que hace la suplencia <strong>suma horas extras</strong> y la persona suplida <strong>debe horas</strong>.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="form-single-observations" data-i18n="txtObservations">Observaciones adicionales (Opcional)</label>
+                  <input type="text" class="form-control" id="form-single-observations" placeholder="Ej: 13:30-18:00 Por Aurora.">
+                </div>
+              </div>
+
+            </div>
+
+            <!-- BOTÓN GUARDAR -->
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:14px; font-size:1.05rem;">
+              <span>💾</span> <span data-i18n="btnSaveOnly">Guardar Incidencia</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 4. PANTALLA VER INCIDENCIAS Y FORMATO FÍSICO OFICIAL    -->
+    <!-- ======================================================== -->
+    <section class="app-view-section" id="view-report">
+      <div class="view-top-bar">
+        <button class="btn-back" data-navigate="hub">
+          <span>←</span> <span data-i18n="btnBackHub">Volver al Menú Principal</span>
+        </button>
+
+        <div style="display:flex; gap:8px;">
+          <button class="btn-secondary" id="btn-print-sheet">
+            <span>🖨️</span> <span data-i18n="btnPrintReport">Imprimir Informe</span>
+          </button>
+          <button class="btn-secondary" id="btn-download-excel">
+            <span>📊</span> <span>Excel</span>
+          </button>
+          <button class="btn-secondary" id="btn-download-pdf">
+            <span>📄</span> <span>PDF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- BARRA DE FILTROS -->
+      <div class="report-filters-bar">
+        <div class="report-filters-group">
+          <!-- Selector Centro -->
+          <select class="custom-select" id="report-work-center" style="font-weight:600;"></select>
+
+          <!-- Selector Mes y Año -->
+          <select class="custom-select" id="report-month" style="font-weight:600;">
             <option value="1">Enero</option>
             <option value="2">Febrero</option>
             <option value="3">Marzo</option>
@@ -1240,213 +1082,69 @@
             <option value="7">Julio</option>
             <option value="8">Agosto</option>
             <option value="9">Septiembre</option>
-            <option value="10">Octubre</option>
+            <option value="10" selected>Octubre</option>
             <option value="11">Noviembre</option>
             <option value="12">Diciembre</option>
           </select>
-          <input type="number" class="form-control" id="filter-year" style="max-width:100px;" value="2026">
-          <select class="form-control" id="filter-type" style="max-width:190px;">
-            <option value="" data-i18n="txtAllTypes">Todos los Tipos</option>
-            <option value="SUBSTITUTION">Sustituciones</option>
-            <option value="OVERTIME">Horas Extra</option>
-            <option value="VACATION">Vacaciones</option>
-            <option value="PERSONAL_MATTERS">Asuntos Propios</option>
-            <option value="LEAVE_OR_DEATH">Baja / Defunción</option>
-            <option value="CONTRACT_END">Fin de Contrato</option>
-          </select>
-          <input type="text" class="form-control" id="filter-search-worker" placeholder="Buscar trabajador..." style="max-width:220px;">
-          <button class="btn-secondary" id="btn-clear-filters" style="padding:8px 14px;" data-i18n="btnClearFilter">Limpiar Filtros</button>
-          <button class="btn-secondary" id="btn-refresh-report" style="padding:8px 14px;">🔄</button>
+          <input type="number" class="custom-select" id="report-year" value="2026" style="width:80px;" min="2020" max="2035">
         </div>
 
-        <!-- Table View Grouped by Worker -->
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th style="min-width:180px;">Trabajador</th>
-                <th>Centro</th>
-                <th class="text-center">H. Extra</th>
-                <th class="text-center">H. Sustitución</th>
-                <th class="text-center">Vacaciones</th>
-                <th class="text-center">Asuntos P.</th>
-                <th class="text-center">Baja/Fall.</th>
-                <th style="min-width:300px;">Desglose de Incidencias</th>
-              </tr>
-            </thead>
-            <tbody id="report-tbody">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
+        <!-- FILTROS SOLICITADOS -->
+        <div class="report-filters-group">
+          <button class="filter-pill active" id="filter-btn-all">
+            <span>📋</span> <span>Todos</span>
+          </button>
+          <button class="filter-pill pill-owed" id="filter-btn-owed">
+            <span>⚠️</span> <span data-i18n="filterOwedHours">Personas que deben horas</span>
+          </button>
+          <button class="filter-pill pill-overtime" id="filter-btn-overtime">
+            <span>⏱️</span> <span data-i18n="filterOvertime">Personas con horas extras</span>
+          </button>
         </div>
       </div>
-    </section>
 
-    <!-- ========================================== -->
-    <!-- 3. VISTA MAESTROS: CENTROS Y TRABAJADORES  -->
-    <!-- ========================================== -->
-    <section class="app-view-section" id="view-master">
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr)); gap:24px;">
-        
-        <!-- Centros de Trabajo -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <span>🏢</span>
-              <span>Centros de Trabajo</span>
-            </div>
-            <button class="btn-primary" id="btn-add-center" style="padding:6px 14px; font-size:0.8rem;">
-              <span>➕</span>
-              <span data-i18n="btnAddCenter">Añadir Centro</span>
-            </button>
-          </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Código</th>
-                  <th>Nombre</th>
-                  <th>Ciudad</th>
-                  <th>Dirección</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="work-centers-tbody"></tbody>
-            </table>
-          </div>
+      <!-- RESUMEN DE BALANCE -->
+      <div class="report-metrics-row">
+        <div class="metric-chip chip-overtime">
+          <span>🟢</span> <span>Horas Extras Ganadas:</span> <strong id="metric-overtime-summary">0 h</strong>
         </div>
-
-        <!-- Trabajadores -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <span>👥</span>
-              <span>Plantilla de Trabajadores</span>
-            </div>
-            <button class="btn-primary" id="btn-add-worker" style="padding:6px 14px; font-size:0.8rem;">
-              <span>➕</span>
-              <span data-i18n="btnAddWorker">Añadir Trabajador</span>
-            </button>
-          </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>DNI/NIE</th>
-                  <th>Contrato</th>
-                  <th>Centro</th>
-                  <th>Estado</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="workers-tbody"></tbody>
-            </table>
-          </div>
+        <div class="metric-chip chip-owed">
+          <span>🔴</span> <span>Horas / Turnos a Deber:</span> <strong id="metric-owed-summary">0 h</strong>
         </div>
+      </div>
 
+      <!-- LA TABLA DEL PARTE OFICIAL (FORMATO HOJA FÍSICA DE 3 COLUMNAS) -->
+      <div class="sheet-wrapper">
+        <table class="official-table">
+          <thead>
+            <!-- FILA 1: 2 COLUMNAS (OCTUBRE | HORAS E INCIDENCIAS EDIFICIO JUEZ BORRULL) -->
+            <tr class="row-header-title">
+              <th class="col-title-month" id="sheet-header-month">OCTUBRE</th>
+              <th class="col-title-center" colspan="2" id="sheet-header-center-title">
+                HORAS E INCIDENCIAS EDIFICIO JUEZ BORRULL
+              </th>
+            </tr>
+            <!-- FILA 2: 3 COLUMNAS (TRABAJADOR/@ | FECHA | INCIDENCIA Horas Extr / DC) -->
+            <tr class="row-header-cols">
+              <th class="th-worker">TRABAJADOR/@</th>
+              <th class="th-date">FECHA</th>
+              <th class="th-incident">INCIDENCIA Horas Extr / DC</th>
+            </tr>
+          </thead>
+          <!-- FILA 3 EN ADELANTE: DATOS REALES Y FILAS EN BLANCO PARA RELLENAR -->
+          <tbody id="official-sheet-tbody">
+            <!-- Renderizado dinámico idéntico al papel -->
+          </tbody>
+        </table>
       </div>
     </section>
 
   </main>
 
-  <!-- MODAL: LOGIN GERENCIA -->
-  <div class="modal-backdrop" id="login-modal" style="display:none;">
-    <div class="modal-box">
-      <div class="modal-header">
-        <div class="modal-title" data-i18n="navLogin">Acceso Gerencia</div>
-        <button class="btn-close-modal" id="btn-close-login">✕</button>
-      </div>
-
-      <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:16px;">
-        Credenciales de prueba: Usuario: <code style="color:var(--accent-blue);">gerente</code> / Contraseña: <code style="color:var(--accent-blue);">admin123</code>
-      </div>
-
-      <div id="login-error-msg" style="display:none; color:var(--accent-rose); font-size:0.82rem; margin-bottom:12px; font-weight:600;"></div>
-
-      <form id="login-form">
-        <div class="form-group" style="margin-bottom:14px;">
-          <label for="input-username">Usuario o Email</label>
-          <input type="text" class="form-control" id="input-username" value="gerente" required>
-        </div>
-        <div class="form-group" style="margin-bottom:20px;">
-          <label for="input-password">Contraseña</label>
-          <input type="password" class="form-control" id="input-password" value="admin123" required>
-        </div>
-        <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Iniciar Sesión</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: AÑADIR CENTRO -->
-  <div class="modal-backdrop" id="modal-add-center" style="display:none;">
-    <div class="modal-box">
-      <div class="modal-header">
-        <div class="modal-title">Añadir Centro de Trabajo</div>
-        <button class="btn-close-modal" id="btn-close-center-modal">✕</button>
-      </div>
-      <form id="form-add-center">
-        <div class="form-group" style="margin-bottom:12px;">
-          <label>Código (ej. BOR-001)</label>
-          <input type="text" class="form-control" id="input-center-code" required placeholder="BOR-001">
-        </div>
-        <div class="form-group" style="margin-bottom:12px;">
-          <label>Nombre del Centro</label>
-          <input type="text" class="form-control" id="input-center-name" required placeholder="Edificio Juez Borrull">
-        </div>
-        <div class="form-group" style="margin-bottom:12px;">
-          <label>Ciudad</label>
-          <input type="text" class="form-control" id="input-center-city" placeholder="Castellón de la Plana">
-        </div>
-        <div class="form-group" style="margin-bottom:20px;">
-          <label>Dirección</label>
-          <input type="text" class="form-control" id="input-center-address" placeholder="Plaza del Juez Borrull, 1">
-        </div>
-        <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Guardar Centro</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: AÑADIR TRABAJADOR -->
-  <div class="modal-backdrop" id="modal-add-worker" style="display:none;">
-    <div class="modal-box">
-      <div class="modal-header">
-        <div class="modal-title">Añadir Trabajador</div>
-        <button class="btn-close-modal" id="btn-close-worker-modal">✕</button>
-      </div>
-      <form id="form-add-worker">
-        <div class="form-group" style="margin-bottom:12px;">
-          <label>Nombre y Apellidos</label>
-          <input type="text" class="form-control" id="input-worker-name" required placeholder="Aurora Beltrán">
-        </div>
-        <div class="form-group" style="margin-bottom:12px;">
-          <label>DNI o NIE</label>
-          <input type="text" class="form-control" id="input-worker-dni" placeholder="48123456A">
-        </div>
-        <div class="form-group" style="margin-bottom:12px;">
-          <label>Tipo de Contrato</label>
-          <select class="form-control" id="select-worker-contract">
-            <option value="INDEFINIDO">Indefinido</option>
-            <option value="TEMPORAL">Temporal</option>
-            <option value="PRACTICAS">Prácticas</option>
-            <option value="FORMACION">Formación</option>
-            <option value="FIJO_DISCONTINUO">Fijo Discontinuo</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin-bottom:20px;">
-          <label>Centro de Trabajo Asignado</label>
-          <select class="form-control" id="select-worker-center"></select>
-        </div>
-        <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Guardar Trabajador</button>
-      </form>
-    </div>
-  </div>
-
   <!-- ANIMATED SVG HOURGLASS LOADER (GLASSMORPHISM OVERLAY) -->
   <div class="app-loader-backdrop" id="app-loader" style="display:none;">
     <div class="loader-content" style="display:flex; flex-direction:column; align-items:center; gap:16px;">
       <svg id="wrap" width="180" height="180" viewBox="0 0 300 300" style="filter: drop-shadow(0 12px 30px rgba(0,0,0,0.6));">
-        <!-- background -->
         <g>
           <circle cx="150" cy="150" r="130" style="stroke: #38bdf8; stroke-width:18; fill:transparent"/>
           <circle cx="150" cy="150" r="115" style="fill:#1e293b"/>
@@ -1455,7 +1153,6 @@
           </path>
         </g>
         
-        <!-- image -->
         <g>
           <path id="hourglass" d="M150,150 C60,85 240,85 150,150 C60,215 240,215 150,150 Z" style="stroke: white; stroke-width:5; fill:white;" />
           <path id="frame" d="M100,97 L200, 97 M100,203 L200,203 M110,97 L110,142 M110,158 L110,200 M190,97 L190,142 M190,158 L190,200 M110,150 L110,150 M190,150 L190,150" style="stroke:#38bdf8; stroke-width:6; stroke-linecap:round" />
@@ -1463,21 +1160,17 @@
           <animateTransform xlink:href="#hourglass" attributeName="transform" type="rotate" begin="0s" dur="3s" values="0 150 150; 0 150 150; 180 150 150" keyTimes="0; 0.8; 1" repeatCount="indefinite" />
         </g>
         
-        <!-- sand -->
         <g>
-          <!-- upper part -->
           <polygon id="upper" points="120,125 180,125 150,147" style="fill:#0f172a;">
             <animate attributeName="points" dur="3s" keyTimes="0; 0.8; 1" values="120,125 180,125 150,147; 150,150 150,150 150,150; 150,150 150,150 150,150" repeatCount="indefinite"/>
           </polygon>
           
-          <!-- falling sand -->
           <path id="line" stroke-linecap="round" stroke-dasharray="1,4" stroke-dashoffset="200.00" stroke="#0f172a" stroke-width="2" d="M150,150 L150,198">
             <animate attributeName="stroke-dashoffset" dur="3s" to="1.00" repeatCount="indefinite"/>
             <animate attributeName="d" dur="3s" to="M150,195 L150,195" values="M150,150 L150,198; M150,150 L150,198; M150,198 L150,198; M150,195 L150,195" keyTimes="0; 0.65; 0.9; 1" repeatCount="indefinite"/>
             <animate attributeName="stroke" dur="3s" keyTimes="0; 0.65; 0.8; 1" values="#0f172a;#0f172a;transparent;transparent" to="transparent" repeatCount="indefinite"/>
           </path>
           
-          <!-- lower part -->
           <g id="lower">
             <path d="M150,180 L180,190 A28,10 0 1,1 120,190 L150,180 Z" style="stroke: transparent; stroke-width:5; fill:#0f172a;">
               <animateTransform attributeName="transform" type="translate" keyTimes="0; 0.65; 1" values="0 15; 0 0; 0 0" dur="3s" repeatCount="indefinite" />
@@ -1485,12 +1178,10 @@
             <animateTransform xlink:href="#lower" attributeName="transform" type="rotate" begin="0s" dur="3s" values="0 150 150; 0 150 150; 180 150 150" keyTimes="0; 0.8; 1" repeatCount="indefinite"/>
           </g>
           
-          <!-- lower overlay - hourglass -->
           <path d="M150,150 C60,85 240,85 150,150 C60,215 240,215 150,150 Z" style="stroke: white; stroke-width:5; fill:transparent;">
             <animateTransform attributeName="transform" type="rotate" begin="0s" dur="3s" values="0 150 150; 0 150 150; 180 150 150" keyTimes="0; 0.8; 1" repeatCount="indefinite"/>
           </path>
           
-          <!-- lower overlay - frame -->
           <path id="frame2" d="M100,97 L200, 97 M100,203 L200,203" style="stroke:#38bdf8; stroke-width:6; stroke-linecap:round">
             <animateTransform attributeName="transform" type="rotate" begin="0s" dur="3s" values="0 150 150; 0 150 150; 180 150 150" keyTimes="0; 0.8; 1" repeatCount="indefinite"/>
           </path>

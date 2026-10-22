@@ -28,13 +28,27 @@ export class GetMonthlyReportUseCase {
       workerId: filter.workerId
     });
 
-    // Group incidents by workerId
+    const workerMap = new Map<string, typeof allWorkers[0]>();
+    for (const w of allWorkers) {
+      workerMap.set(w.id, w);
+    }
+
+    // Group incidents by workerId and also index substitutions by substitutedWorkerId
     const mapByWorker = new Map<string, typeof incidents>();
+    const mapSubstitutedFor = new Map<string, typeof incidents>();
+
     for (const inc of incidents) {
       if (!mapByWorker.has(inc.workerId)) {
         mapByWorker.set(inc.workerId, []);
       }
       mapByWorker.get(inc.workerId)!.push(inc);
+
+      if (inc.type === IncidentType.SUBSTITUTION && inc.substitutedWorkerId) {
+        if (!mapSubstitutedFor.has(inc.substitutedWorkerId)) {
+          mapSubstitutedFor.set(inc.substitutedWorkerId, []);
+        }
+        mapSubstitutedFor.get(inc.substitutedWorkerId)!.push(inc);
+      }
     }
 
     // Determine target workers
@@ -50,27 +64,73 @@ export class GetMonthlyReportUseCase {
 
     for (const worker of targetWorkers) {
       const workerIncidents = mapByWorker.get(worker.id) || [];
+      const substitutedIncidents = mapSubstitutedFor.get(worker.id) || [];
       const center = allCenters.find(c => c.id === worker.assignedWorkCenterId);
 
       let totalOvertimeHours = 0;
       let totalSubstitutionHours = 0;
+      let owedHours = 0;
       let vacationDaysCount = 0;
       let personalMattersDaysCount = 0;
       let leaveDaysCount = 0;
 
+      const absentDates: { date: string; reason: string; substitutedBy?: string }[] = [];
+      const overtimeDetails: { date: string; hours: number; forWorker?: string }[] = [];
+
+      // Process worker's own incidents
       for (const inc of workerIncidents) {
         if (inc.type === IncidentType.OVERTIME) {
           totalOvertimeHours += inc.totalHours || 0;
+          overtimeDetails.push({
+            date: inc.startDate,
+            hours: inc.totalHours || 0
+          });
         } else if (inc.type === IncidentType.SUBSTITUTION) {
           totalSubstitutionHours += inc.totalHours || 0;
+          const subbedWorker = inc.substitutedWorkerId ? workerMap.get(inc.substitutedWorkerId) : null;
+          overtimeDetails.push({
+            date: inc.startDate,
+            hours: inc.totalHours || 0,
+            forWorker: subbedWorker ? subbedWorker.name : undefined
+          });
         } else if (inc.type === IncidentType.VACATION) {
           vacationDaysCount += this.calculateDays(inc.startDate, inc.endDate);
+          absentDates.push({
+            date: inc.startDate === inc.endDate ? inc.startDate : `${inc.startDate} al ${inc.endDate}`,
+            reason: inc.observations || 'Vacaciones'
+          });
         } else if (inc.type === IncidentType.PERSONAL_MATTERS) {
           personalMattersDaysCount += this.calculateDays(inc.startDate, inc.endDate);
+          absentDates.push({
+            date: inc.startDate === inc.endDate ? inc.startDate : `${inc.startDate} al ${inc.endDate}`,
+            reason: inc.observations || 'Asuntos propios'
+          });
         } else if (inc.type === IncidentType.LEAVE_OR_DEATH) {
           leaveDaysCount += this.calculateDays(inc.startDate, inc.endDate);
+          absentDates.push({
+            date: inc.startDate === inc.endDate ? inc.startDate : `${inc.startDate} al ${inc.endDate}`,
+            reason: inc.observations || 'Fallecimiento / Baja médica'
+          });
+        } else if (inc.type === IncidentType.CONTRACT_END) {
+          absentDates.push({
+            date: inc.startDate,
+            reason: inc.observations || 'Fin de contrato'
+          });
         }
       }
+
+      // Process incidents where this worker was substituted (meaning they missed work and owe hours)
+      for (const subInc of substitutedIncidents) {
+        owedHours += subInc.totalHours || 0;
+        const substituteWorker = workerMap.get(subInc.workerId);
+        absentDates.push({
+          date: subInc.startDate,
+          reason: `Suplido (${subInc.startTime || ''}-${subInc.endTime || ''})`,
+          substitutedBy: substituteWorker ? substituteWorker.name : undefined
+        });
+      }
+
+      const netHours = Number(((totalSubstitutionHours + totalOvertimeHours) - owedHours).toFixed(2));
 
       reportItems.push({
         worker,
@@ -78,9 +138,13 @@ export class GetMonthlyReportUseCase {
         incidents: workerIncidents.sort((a, b) => a.startDate.localeCompare(b.startDate)),
         totalOvertimeHours: Number(totalOvertimeHours.toFixed(2)),
         totalSubstitutionHours: Number(totalSubstitutionHours.toFixed(2)),
+        owedHours: Number(owedHours.toFixed(2)),
+        netHours,
         vacationDaysCount,
         personalMattersDaysCount,
-        leaveDaysCount
+        leaveDaysCount,
+        absentDates,
+        overtimeDetails
       });
     }
 

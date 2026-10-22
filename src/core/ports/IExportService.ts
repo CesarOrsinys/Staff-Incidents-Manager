@@ -11,6 +11,10 @@ export interface MonthlyWorkerReportItem {
   vacationDaysCount: number;
   personalMattersDaysCount: number;
   leaveDaysCount: number;
+  owedHours?: number;
+  netHours?: number;
+  absentDates?: { date: string; reason: string; substitutedBy?: string }[];
+  overtimeDetails?: { date: string; hours: number; forWorker?: string }[];
 }
 
 export interface ExportReportOptions {

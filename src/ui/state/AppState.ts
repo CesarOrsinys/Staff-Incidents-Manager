@@ -14,8 +14,9 @@ export interface AppStateType {
   selectedWorkCenterId: string;
   selectedMonth: number;
   selectedYear: number;
-  activeView: 'form' | 'report' | 'master';
+  activeView: 'login' | 'hub' | 'form' | 'report' | 'master';
   currentTheme: 'dark' | 'light' | 'slate' | 'ocean';
+  reportFilter: 'all' | 'owed' | 'overtime';
 }
 
 export const AppState: AppStateType = {
@@ -25,9 +26,10 @@ export const AppState: AppStateType = {
   workers: [],
   incidents: [],
   monthlyReport: [],
-  selectedWorkCenterId: '',
+  selectedWorkCenterId: 'wc_borrull',
   selectedMonth: new Date().getMonth() + 1,
   selectedYear: new Date().getFullYear(),
-  activeView: 'form',
-  currentTheme: 'dark'
+  activeView: 'login',
+  currentTheme: 'dark',
+  reportFilter: 'all'
 };

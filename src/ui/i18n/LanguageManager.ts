@@ -82,7 +82,19 @@ export const translations: Record<string, TranslationDictionary> = {
     errSubstitutedWorkerNotFound: "El trabajador sustituido no existe.",
     errWorkCenterNameRequired: "El nombre del centro es obligatorio.",
     errWorkCenterCodeRequired: "El código del centro es obligatorio.",
-    errWorkerNameRequired: "El nombre del trabajador es obligatorio."
+    errWorkerNameRequired: "El nombre del trabajador es obligatorio.",
+    navHub: "Menú Principal",
+    btnNewIncident: "Nueva Incidencia",
+    btnViewIncidents: "Ver Incidencias",
+    btnBackHub: "Volver al Menú",
+    filterOwedHours: "Personas que deben horas",
+    filterOvertime: "Personas con horas extras",
+    btnPrintReport: "Imprimir Informe",
+    btnDownloadFullReport: "Bajar Informe Completo",
+    txtReason: "Motivo",
+    txtReasonOther: "Otro (Especificar)",
+    txtContractEndCheck: "¿Fin de contrato?",
+    txtSubstitutedPerson: "¿A quién se le hizo suplencia?"
   },
   ca: {
     appTitle: "Staff Incidents Manager",
@@ -163,7 +175,19 @@ export const translations: Record<string, TranslationDictionary> = {
     errSubstitutedWorkerNotFound: "El treballador substituït no existeix.",
     errWorkCenterNameRequired: "El nom del centre és obligatori.",
     errWorkCenterCodeRequired: "El codi del centre és obligatori.",
-    errWorkerNameRequired: "El nom del treballador és obligatori."
+    errWorkerNameRequired: "El nom del treballador és obligatori.",
+    navHub: "Menú Principal",
+    btnNewIncident: "Nova Incidència",
+    btnViewIncidents: "Veure Incidències",
+    btnBackHub: "Tornar al Menú",
+    filterOwedHours: "Persones que deuen hores",
+    filterOvertime: "Persones amb hores extres",
+    btnPrintReport: "Imprimir Informe",
+    btnDownloadFullReport: "Baixar Informe Complet",
+    txtReason: "Motiu",
+    txtReasonOther: "Altre (Especificar)",
+    txtContractEndCheck: "Fi de contracte?",
+    txtSubstitutedPerson: "A qui se li va fer suplència?"
   },
   en: {
     appTitle: "Staff Incidents Manager",
@@ -244,7 +268,19 @@ export const translations: Record<string, TranslationDictionary> = {
     errSubstitutedWorkerNotFound: "The substituted worker does not exist.",
     errWorkCenterNameRequired: "Work center name is required.",
     errWorkCenterCodeRequired: "Work center code is required.",
-    errWorkerNameRequired: "Worker name is required."
+    errWorkerNameRequired: "Worker name is required.",
+    navHub: "Main Menu",
+    btnNewIncident: "New Incident",
+    btnViewIncidents: "View Incidents",
+    btnBackHub: "Back to Menu",
+    filterOwedHours: "Staff Owing Hours",
+    filterOvertime: "Staff with Overtime",
+    btnPrintReport: "Print Report",
+    btnDownloadFullReport: "Download Full Report",
+    txtReason: "Reason",
+    txtReasonOther: "Other (Specify)",
+    txtContractEndCheck: "End of contract?",
+    txtSubstitutedPerson: "Who was substituted?"
   },
   fr: {
     appTitle: "Staff Incidents Manager",
@@ -325,7 +361,19 @@ export const translations: Record<string, TranslationDictionary> = {
     errSubstitutedWorkerNotFound: "Le travailleur remplacé n'existe pas.",
     errWorkCenterNameRequired: "Le nom du centre est obligatoire.",
     errWorkCenterCodeRequired: "Le code du centre est obligatoire.",
-    errWorkerNameRequired: "Le nom du travailleur est obligatoire."
+    errWorkerNameRequired: "Le nom du travailleur est obligatoire.",
+    navHub: "Menu Principal",
+    btnNewIncident: "Nouvelle Incidente",
+    btnViewIncidents: "Voir les Incidentes",
+    btnBackHub: "Retour au Menu",
+    filterOwedHours: "Personnel devant des heures",
+    filterOvertime: "Personnel avec heures sup.",
+    btnPrintReport: "Imprimer le Rapport",
+    btnDownloadFullReport: "Télécharger le Rapport Complet",
+    txtReason: "Motif",
+    txtReasonOther: "Autre (Préciser)",
+    txtContractEndCheck: "Fin de contrat ?",
+    txtSubstitutedPerson: "Qui a été remplacé ?"
   },
   de: {
     appTitle: "Staff Incidents Manager",
@@ -406,7 +454,19 @@ export const translations: Record<string, TranslationDictionary> = {
     errSubstitutedWorkerNotFound: "Der vertretene Mitarbeiter existiert nicht.",
     errWorkCenterNameRequired: "Standortname ist erforderlich.",
     errWorkCenterCodeRequired: "Standortcode ist erforderlich.",
-    errWorkerNameRequired: "Mitarbeitername ist erforderlich."
+    errWorkerNameRequired: "Mitarbeitername ist erforderlich.",
+    navHub: "Hauptmenü",
+    btnNewIncident: "Neuer Vorfall",
+    btnViewIncidents: "Vorfälle anzeigen",
+    btnBackHub: "Zurück zum Menü",
+    filterOwedHours: "Mitarbeiter mit Minusstunden",
+    filterOvertime: "Mitarbeiter mit Überstunden",
+    btnPrintReport: "Bericht drucken",
+    btnDownloadFullReport: "Vollständigen Bericht herunterladen",
+    txtReason: "Grund",
+    txtReasonOther: "Anderer (Angeben)",
+    txtContractEndCheck: "Vertragsende?",
+    txtSubstitutedPerson: "Wer wurde vertreten?"
   }
 };
 

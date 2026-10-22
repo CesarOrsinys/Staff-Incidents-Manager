@@ -6,6 +6,8 @@ import { showToast } from '../services/ToastService.js';
 import { withLoader } from '../services/LoaderService.js';
 
 export class MonthlyReportComponent {
+  private static currentFilter: 'all' | 'owed' | 'overtime' = 'all';
+
   public static init(): void {
     this.populateFilters();
     this.setupListeners();
@@ -13,27 +15,29 @@ export class MonthlyReportComponent {
   }
 
   public static populateFilters(): void {
-    const filterCenter = document.getElementById('filter-work-center') as HTMLSelectElement;
+    const filterCenter = document.getElementById('report-work-center') as HTMLSelectElement;
     if (filterCenter) {
-      filterCenter.innerHTML = '<option value="">Todos los Centros</option>' +
-        AppState.workCenters.map(c => `
-          <option value="${c.id}" ${c.id === AppState.selectedWorkCenterId ? 'selected' : ''}>${c.name}</option>
-        `).join('');
+      filterCenter.innerHTML = AppState.workCenters.map(c => `
+        <option value="${c.id}" ${c.id === 'wc_borrull' || c.code === 'BOR-001' ? 'selected' : ''}>
+          ${c.name}
+        </option>
+      `).join('');
+      if (!filterCenter.value && AppState.workCenters.length > 0) {
+        filterCenter.value = AppState.workCenters[0].id;
+      }
     }
 
-    const filterMonth = document.getElementById('filter-month') as HTMLSelectElement;
-    const filterYear = document.getElementById('filter-year') as HTMLInputElement;
+    const filterMonth = document.getElementById('report-month') as HTMLSelectElement;
+    const filterYear = document.getElementById('report-year') as HTMLInputElement;
 
     if (filterMonth) filterMonth.value = String(AppState.selectedMonth);
     if (filterYear) filterYear.value = String(AppState.selectedYear);
   }
 
   public static async loadReport(): Promise<void> {
-    const filterCenter = (document.getElementById('filter-work-center') as HTMLSelectElement)?.value || '';
-    const filterMonth = (document.getElementById('filter-month') as HTMLSelectElement)?.value || String(AppState.selectedMonth);
-    const filterYear = (document.getElementById('filter-year') as HTMLInputElement)?.value || String(AppState.selectedYear);
-    const searchWorker = (document.getElementById('filter-search-worker') as HTMLInputElement)?.value.trim().toLowerCase() || '';
-    const filterType = (document.getElementById('filter-type') as HTMLSelectElement)?.value || '';
+    const filterCenter = (document.getElementById('report-work-center') as HTMLSelectElement)?.value || 'wc_borrull';
+    const filterMonth = (document.getElementById('report-month') as HTMLSelectElement)?.value || String(AppState.selectedMonth);
+    const filterYear = (document.getElementById('report-year') as HTMLInputElement)?.value || String(AppState.selectedYear);
 
     await withLoader(async () => {
       try {
@@ -45,207 +49,236 @@ export class MonthlyReportComponent {
 
         const res = await fetch(`/api/reports/monthly?${query.toString()}`);
         if (!res.ok) throw new Error('Error al cargar informe');
-        let data: MonthlyWorkerReportItem[] = await res.json();
-
-        // Local filtering by search and type
-        if (searchWorker) {
-          data = data.filter(item => 
-            item.worker.name.toLowerCase().includes(searchWorker) ||
-            (item.worker.documentId && item.worker.documentId.toLowerCase().includes(searchWorker))
-          );
-        }
-
-        if (filterType) {
-          data = data.filter(item => item.incidents.some(inc => inc.type === filterType));
-        }
+        const data: MonthlyWorkerReportItem[] = await res.json();
 
         AppState.monthlyReport = data;
         this.renderMetrics(data);
-        this.renderTable(data);
+        this.renderOfficialTable(data);
       } catch (err: any) {
         showToast(err.message || 'Error al obtener informe', 'danger');
       }
-    }, 'Cargando informe mensual...');
+    }, 'Cargando partes e informe...');
   }
 
-  public static renderMetrics(data: MonthlyWorkerReportItem[]): void {
-    let totalOvertime = 0;
-    let totalSubstitution = 0;
-    let totalVacations = 0;
-    let totalPersonal = 0;
-    let totalLeave = 0;
-    let activeWorkersCount = 0;
+  public static setFilter(filter: 'all' | 'owed' | 'overtime'): void {
+    this.currentFilter = filter;
+    const btnAll = document.getElementById('filter-btn-all');
+    const btnOwed = document.getElementById('filter-btn-owed');
+    const btnOvertime = document.getElementById('filter-btn-overtime');
+
+    btnAll?.classList.toggle('active', filter === 'all');
+    btnOwed?.classList.toggle('active', filter === 'owed');
+    btnOvertime?.classList.toggle('active', filter === 'overtime');
+
+    this.renderOfficialTable(AppState.monthlyReport);
+  }
+
+  private static renderMetrics(data: MonthlyWorkerReportItem[]): void {
+    let totalOvertimeHours = 0;
+    let totalOwedHours = 0;
+    let staffOwingCount = 0;
+    let staffOvertimeCount = 0;
 
     for (const item of data) {
-      totalOvertime += item.totalOvertimeHours;
-      totalSubstitution += item.totalSubstitutionHours;
-      totalVacations += item.vacationDaysCount;
-      totalPersonal += item.personalMattersDaysCount;
-      totalLeave += item.leaveDaysCount;
-      if (item.incidents.length > 0) activeWorkersCount++;
+      const earned = (item.totalSubstitutionHours || 0) + (item.totalOvertimeHours || 0);
+      const owed = item.owedHours || 0;
+
+      totalOvertimeHours += earned;
+      totalOwedHours += owed;
+
+      if (owed > 0 || (item.absentDates && item.absentDates.length > 0)) {
+        staffOwingCount++;
+      }
+      if (earned > 0) {
+        staffOvertimeCount++;
+      }
     }
 
-    const elOvertime = document.getElementById('metric-overtime');
-    const elSubs = document.getElementById('metric-subs');
-    const elVacations = document.getElementById('metric-vacations');
-    const elPersonal = document.getElementById('metric-personal');
-    const elLeave = document.getElementById('metric-leave');
-    const elActiveWorkers = document.getElementById('metric-workers');
-
-    if (elOvertime) elOvertime.textContent = `${totalOvertime.toFixed(1)} h`;
-    if (elSubs) elSubs.textContent = `${totalSubstitution.toFixed(1)} h`;
-    if (elVacations) elVacations.textContent = `${totalVacations} d`;
-    if (elPersonal) elPersonal.textContent = `${totalPersonal} d`;
-    if (elLeave) elLeave.textContent = `${totalLeave} d`;
-    if (elActiveWorkers) elActiveWorkers.textContent = String(activeWorkersCount);
+    const badgeOwed = document.getElementById('metric-owed-summary');
+    const badgeOvertime = document.getElementById('metric-overtime-summary');
+    if (badgeOwed) {
+      badgeOwed.textContent = `${totalOwedHours.toFixed(1)} h a deber (${staffOwingCount} personas)`;
+    }
+    if (badgeOvertime) {
+      badgeOvertime.textContent = `${totalOvertimeHours.toFixed(1)} h extras (${staffOvertimeCount} personas)`;
+    }
   }
 
-  public static renderTable(data: MonthlyWorkerReportItem[]): void {
-    const tbody = document.getElementById('report-tbody');
+  public static renderOfficialTable(data: MonthlyWorkerReportItem[]): void {
+    const tbody = document.getElementById('official-sheet-tbody');
+    const titleCenterEl = document.getElementById('sheet-header-center-title');
+    const monthEl = document.getElementById('sheet-header-month');
     if (!tbody) return;
 
-    if (data.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="8" class="text-center py-6 text-muted">
-            ${LanguageManager.t('txtNoIncidents')}
-          </td>
-        </tr>
-      `;
-      return;
+    const filterMonth = Number((document.getElementById('report-month') as HTMLSelectElement)?.value || AppState.selectedMonth);
+    const monthsNames = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+    const monthName = monthsNames[filterMonth - 1] || 'OCTUBRE';
+
+    const selectedCenterId = (document.getElementById('report-work-center') as HTMLSelectElement)?.value || 'wc_borrull';
+    const centerObj = AppState.workCenters.find(c => c.id === selectedCenterId);
+    const centerName = centerObj ? centerObj.name.toUpperCase() : 'EDIFICIO JUEZ BORRULL';
+
+    if (monthEl) monthEl.textContent = monthName;
+    if (titleCenterEl) titleCenterEl.textContent = `HORAS E INCIDENCIAS ${centerName}`;
+
+    // Apply active filter
+    let filteredData = [...data];
+    if (this.currentFilter === 'owed') {
+      filteredData = filteredData.filter(item => 
+        (item.owedHours && item.owedHours > 0) || 
+        (item.absentDates && item.absentDates.length > 0) ||
+        item.vacationDaysCount > 0 ||
+        item.personalMattersDaysCount > 0 ||
+        item.leaveDaysCount > 0
+      );
+    } else if (this.currentFilter === 'overtime') {
+      filteredData = filteredData.filter(item => 
+        ((item.totalSubstitutionHours || 0) + (item.totalOvertimeHours || 0)) > 0
+      );
     }
 
-    tbody.innerHTML = data.map(item => {
-      const incidentsListHtml = item.incidents.length > 0 
-        ? item.incidents.map(inc => {
-            const badgeClass = this.getTypeBadgeClass(inc.type);
-            const typeLabel = LanguageManager.t(`type_${inc.type}`) || inc.type;
-            const dates = inc.isRange ? `${inc.startDate} al ${inc.endDate}` : inc.startDate;
-            const schedule = (inc.startTime && inc.endTime) ? ` [${inc.startTime} - ${inc.endTime} · ${inc.totalHours}h]` : '';
-            const sub = inc.substitutedWorkerId ? ` ➔ Cubre a: <strong>${this.getWorkerName(inc.substitutedWorkerId)}</strong>` : '';
-            const obs = inc.observations ? ` <span class="text-dim">("${inc.observations}")</span>` : '';
+    let rowsHtml = '';
 
-            return `
-              <div class="incident-pill-row">
-                <span class="badge ${badgeClass}">${typeLabel}</span>
-                <span class="incident-desc">${dates}${schedule}${sub}${obs}</span>
-                <button class="btn-xs-danger btn-delete-incident" data-id="${inc.id}" title="Eliminar registro">✕</button>
-              </div>
+    for (const item of filteredData) {
+      const workerName = item.worker.name.toUpperCase();
+      const incidents = item.incidents || [];
+
+      // Determine lines to render for this worker
+      if (incidents.length === 0) {
+        // If owed filter is active and worker has absences due to substitution
+        if (item.absentDates && item.absentDates.length > 0) {
+          for (const abs of item.absentDates) {
+            const desc = abs.substitutedBy ? `Suplido/a por ${abs.substitutedBy}` : abs.reason;
+            rowsHtml += `
+              <tr class="sheet-data-row">
+                <td class="col-worker font-bold">${workerName}</td>
+                <td class="col-date">${abs.date}</td>
+                <td class="col-incident text-rose">${desc}</td>
+              </tr>
             `;
-          }).join('')
-        : `<span class="text-muted text-xs">Sin incidencias este mes</span>`;
+          }
+        } else {
+          // Empty line with worker name (like Rafael Arismendi on physical paper)
+          rowsHtml += `
+            <tr class="sheet-data-row">
+              <td class="col-worker font-bold">${workerName}</td>
+              <td class="col-date"></td>
+              <td class="col-incident"></td>
+            </tr>
+          `;
+        }
+      } else {
+        // Render each incident row
+        incidents.forEach((inc, idx) => {
+          let dateStr = inc.startDate;
+          if (inc.isRange && inc.endDate && inc.endDate !== inc.startDate) {
+            dateStr = `${inc.startDate.slice(8)} al ${inc.endDate.slice(8)}/${inc.startDate.slice(5, 7)}/${inc.startDate.slice(2, 4)}`;
+          } else if (inc.startDate) {
+            const parts = inc.startDate.split('-');
+            dateStr = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0].slice(2)}` : inc.startDate;
+          }
 
-      return `
-        <tr class="report-worker-row">
-          <td>
-            <div class="font-bold text-main">${item.worker.name}</div>
-            <div class="text-xs text-muted">${item.worker.documentId || 'Sin DNI'} · ${item.worker.contractStatus}</div>
-          </td>
-          <td>
-            <span class="badge badge-subtle">${item.workCenter ? item.workCenter.name : '-'}</span>
-          </td>
-          <td class="text-center font-bold text-amber">
-            ${item.totalOvertimeHours > 0 ? `${item.totalOvertimeHours} h` : '-'}
-          </td>
-          <td class="text-center font-bold text-blue">
-            ${item.totalSubstitutionHours > 0 ? `${item.totalSubstitutionHours} h` : '-'}
-          </td>
-          <td class="text-center">
-            ${item.vacationDaysCount > 0 ? `<span class="badge badge-emerald">${item.vacationDaysCount} d</span>` : '-'}
-          </td>
-          <td class="text-center">
-            ${item.personalMattersDaysCount > 0 ? `<span class="badge badge-purple">${item.personalMattersDaysCount} d</span>` : '-'}
-          </td>
-          <td class="text-center">
-            ${item.leaveDaysCount > 0 ? `<span class="badge badge-rose">${item.leaveDaysCount} d</span>` : '-'}
-          </td>
-          <td class="worker-incidents-col">
-            <div class="incidents-container">
-              ${incidentsListHtml}
-            </div>
-          </td>
+          let incDesc = inc.observations || '';
+          if (!incDesc) {
+            if (inc.type === IncidentType.SUBSTITUTION) {
+              const subbed = AppState.workers.find(w => w.id === inc.substitutedWorkerId);
+              const subName = subbed ? subbed.name.split(' ')[0] : 'Compañero';
+              incDesc = `${inc.startTime || ''}-${inc.endTime || ''} Por ${subName}.`;
+            } else if (inc.type === IncidentType.VACATION) {
+              incDesc = 'Vacaciones';
+            } else if (inc.type === IncidentType.PERSONAL_MATTERS) {
+              incDesc = 'Asuntos propios';
+            } else if (inc.type === IncidentType.LEAVE_OR_DEATH) {
+              incDesc = 'Baja médica / Permiso';
+            } else if (inc.type === IncidentType.CONTRACT_END) {
+              incDesc = `Término de contrato ${dateStr}`;
+            }
+          }
+
+          rowsHtml += `
+            <tr class="sheet-data-row">
+              <td class="col-worker font-bold">${idx === 0 ? workerName : ''}</td>
+              <td class="col-date">${dateStr}</td>
+              <td class="col-incident">
+                <span class="incident-entry-text">${incDesc}</span>
+                <button class="btn-delete-row no-print" data-id="${inc.id}" title="Eliminar registro">✕</button>
+              </td>
+            </tr>
+          `;
+        });
+      }
+    }
+
+    // Add blank lines at the bottom for manual entries (as requested by user)
+    const blankRowsCount = 8;
+    for (let i = 0; i < blankRowsCount; i++) {
+      rowsHtml += `
+        <tr class="sheet-data-row sheet-blank-row">
+          <td class="col-worker">&nbsp;</td>
+          <td class="col-date">&nbsp;</td>
+          <td class="col-incident">&nbsp;</td>
         </tr>
       `;
-    }).join('');
-  }
-
-  private static getTypeBadgeClass(type: IncidentType): string {
-    switch (type) {
-      case IncidentType.OVERTIME: return 'badge-amber';
-      case IncidentType.SUBSTITUTION: return 'badge-blue';
-      case IncidentType.VACATION: return 'badge-emerald';
-      case IncidentType.PERSONAL_MATTERS: return 'badge-purple';
-      case IncidentType.LEAVE_OR_DEATH: return 'badge-rose';
-      case IncidentType.CONTRACT_END: return 'badge-dark';
-      default: return 'badge-subtle';
     }
-  }
 
-  private static getWorkerName(workerId: string): string {
-    const w = AppState.workers.find(worker => worker.id === workerId);
-    return w ? w.name : workerId;
+    tbody.innerHTML = rowsHtml;
   }
 
   private static setupListeners(): void {
-    const filterCenter = document.getElementById('filter-work-center');
-    const filterMonth = document.getElementById('filter-month');
-    const filterYear = document.getElementById('filter-year');
-    const filterType = document.getElementById('filter-type');
-    const searchWorker = document.getElementById('filter-search-worker');
-    const btnRefresh = document.getElementById('btn-refresh-report');
-    const btnClear = document.getElementById('btn-clear-filters');
-    const btnExcel = document.getElementById('btn-export-excel');
-    const btnPdf = document.getElementById('btn-export-pdf');
+    const filterCenter = document.getElementById('report-work-center');
+    const filterMonth = document.getElementById('report-month');
+    const filterYear = document.getElementById('report-year');
+    const btnAll = document.getElementById('filter-btn-all');
+    const btnOwed = document.getElementById('filter-btn-owed');
+    const btnOvertime = document.getElementById('filter-btn-overtime');
+    const btnPrint = document.getElementById('btn-print-sheet');
+    const btnExcel = document.getElementById('btn-download-excel');
+    const btnPdf = document.getElementById('btn-download-pdf');
 
     filterCenter?.addEventListener('change', () => this.loadReport());
     filterMonth?.addEventListener('change', () => this.loadReport());
     filterYear?.addEventListener('change', () => this.loadReport());
-    filterType?.addEventListener('change', () => this.loadReport());
-    searchWorker?.addEventListener('input', () => this.loadReport());
-    btnRefresh?.addEventListener('click', () => this.loadReport());
 
-    btnClear?.addEventListener('click', () => {
-      if (filterCenter instanceof HTMLSelectElement) filterCenter.value = '';
-      if (filterType instanceof HTMLSelectElement) filterType.value = '';
-      if (searchWorker instanceof HTMLInputElement) searchWorker.value = '';
-      this.loadReport();
-    });
+    btnAll?.addEventListener('click', () => this.setFilter('all'));
+    btnOwed?.addEventListener('click', () => this.setFilter('owed'));
+    btnOvertime?.addEventListener('click', () => this.setFilter('overtime'));
 
-    btnExcel?.addEventListener('click', () => this.downloadExcel());
-    btnPdf?.addEventListener('click', () => this.downloadPdf());
+    btnPrint?.addEventListener('click', () => window.print());
+    btnExcel?.addEventListener('click', () => this.exportExcel());
+    btnPdf?.addEventListener('click', () => this.exportPdf());
 
     // Delegated incident deletion
     document.addEventListener('click', async (e) => {
       const target = e.target as HTMLElement;
-      if (target.classList.contains('btn-delete-incident')) {
+      if (target.classList.contains('btn-delete-row')) {
         const id = target.getAttribute('data-id');
         if (!id) return;
-        if (!confirm('¿Eliminar esta incidencia?')) return;
+        if (!confirm('¿Eliminar este registro del parte?')) return;
 
         await withLoader(async () => {
           const res = await fetch(`/api/incidents/${id}`, { method: 'DELETE' });
           if (res.ok) {
-            showToast(LanguageManager.t('toastIncidentDeleted'), 'info');
+            showToast('Registro eliminado', 'info');
             this.loadReport();
             document.dispatchEvent(new CustomEvent('app:incident-deleted'));
           }
-        });
+        }, 'Eliminando registro...');
       }
     });
   }
 
-  public static async downloadExcel(): Promise<void> {
-    const filterCenter = (document.getElementById('filter-work-center') as HTMLSelectElement)?.value || '';
-    const filterMonth = (document.getElementById('filter-month') as HTMLSelectElement)?.value || String(AppState.selectedMonth);
-    const filterYear = (document.getElementById('filter-year') as HTMLInputElement)?.value || String(AppState.selectedYear);
+  public static async exportExcel(): Promise<void> {
+    const filterCenter = (document.getElementById('report-work-center') as HTMLSelectElement)?.value || 'wc_borrull';
+    const filterMonth = (document.getElementById('report-month') as HTMLSelectElement)?.value || String(AppState.selectedMonth);
+    const filterYear = (document.getElementById('report-year') as HTMLInputElement)?.value || String(AppState.selectedYear);
 
     await withLoader(async () => {
       try {
         const query = new URLSearchParams({
           month: filterMonth,
-          year: filterYear
+          year: filterYear,
+          workCenterId: filterCenter
         });
-        if (filterCenter) query.append('workCenterId', filterCenter);
 
         const res = await fetch(`/api/reports/export/excel?${query.toString()}`);
         if (!res.ok) throw new Error('Error al generar Excel');
@@ -254,31 +287,31 @@ export class MonthlyReportComponent {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Parte_Incidencias_${filterYear}_${String(filterMonth).padStart(2, '0')}.xlsx`;
+        a.download = `Parte_Horas_Incidencias_${filterYear}_${String(filterMonth).padStart(2, '0')}.xlsx`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
 
-        showToast(LanguageManager.t('toastExportSuccess'), 'success');
+        showToast('Archivo Excel descargado con éxito', 'success');
       } catch (err: any) {
         showToast(err.message || 'Error al exportar Excel', 'danger');
       }
     }, 'Generando libro Excel...');
   }
 
-  public static async downloadPdf(): Promise<void> {
-    const filterCenter = (document.getElementById('filter-work-center') as HTMLSelectElement)?.value || '';
-    const filterMonth = (document.getElementById('filter-month') as HTMLSelectElement)?.value || String(AppState.selectedMonth);
-    const filterYear = (document.getElementById('filter-year') as HTMLInputElement)?.value || String(AppState.selectedYear);
+  public static async exportPdf(): Promise<void> {
+    const filterCenter = (document.getElementById('report-work-center') as HTMLSelectElement)?.value || 'wc_borrull';
+    const filterMonth = (document.getElementById('report-month') as HTMLSelectElement)?.value || String(AppState.selectedMonth);
+    const filterYear = (document.getElementById('report-year') as HTMLInputElement)?.value || String(AppState.selectedYear);
 
     await withLoader(async () => {
       try {
         const query = new URLSearchParams({
           month: filterMonth,
-          year: filterYear
+          year: filterYear,
+          workCenterId: filterCenter
         });
-        if (filterCenter) query.append('workCenterId', filterCenter);
 
         const res = await fetch(`/api/reports/export/pdf?${query.toString()}`);
         if (!res.ok) throw new Error('Error al generar PDF');
@@ -287,13 +320,13 @@ export class MonthlyReportComponent {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Parte_Incidencias_${filterYear}_${String(filterMonth).padStart(2, '0')}.pdf`;
+        a.download = `Parte_Horas_Incidencias_${filterYear}_${String(filterMonth).padStart(2, '0')}.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
 
-        showToast(LanguageManager.t('toastExportSuccess'), 'success');
+        showToast('Documento PDF descargado con éxito', 'success');
       } catch (err: any) {
         showToast(err.message || 'Error al exportar PDF', 'danger');
       }
