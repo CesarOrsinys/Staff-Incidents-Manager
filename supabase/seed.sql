@@ -12,7 +12,7 @@ VALUES
     'gerente',
     'gerencia.castello@gva.es',
     'Administrador Territorial Castelló',
-    '$2b$10$wN9P31WJ7b9p8KxQJ.E3k.l6h0pW4t3kK3yP1k3yP1k3yP1k3yP1k', -- admin123
+    '$2b$10$hcFPlXkY/LGCI308x5xfHuLIoDo9Ga3CpFx7cZhfLKAexRqAGHcB6', -- admin123
     'MANAGER',
     true
   ),
@@ -21,7 +21,7 @@ VALUES
     'rrhh_castello',
     'rrhh.generalitat@castello.es',
     'Coordinadora RRHH Personal Castelló',
-    '$2b$10$wN9P31WJ7b9p8KxQJ.E3k.l6h0pW4t3kK3yP1k3yP1k3yP1k3yP1k',
+    '$2b$10$hcFPlXkY/LGCI308x5xfHuLIoDo9Ga3CpFx7cZhfLKAexRqAGHcB6', -- admin123
     'MANAGER',
     true
   ),
@@ -30,7 +30,7 @@ VALUES
     'Borrull',
     'yris.orsinys@borrull.gva.es',
     'Yris Orsinys',
-    '$2b$10$5GjAV6fTN7f3/kZzPVKPL.3EDEGanKnEzUXSR49Go8GoSf0GzU51y', -- 2026
+    '$2b$10$wDMbwfFLaZN.X8yQOmrRc.i15O2f8Ht8lTTcZFC80ubO9f/bSLbpy', -- 2026
     'MANAGER',
     true
   )

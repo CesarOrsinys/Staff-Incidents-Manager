@@ -210,6 +210,19 @@ describe('Staff Incidents Manager - Domain & Use Cases Suite', () => {
       assert.strictEqual(supervisor.name, 'Yris Orsinys');
       assert.strictEqual(supervisor.role, 'MANAGER');
 
+      // Test client-side authHash (sha256 of plain:salt)
+      const crypto = await import('crypto');
+      const salt = 'SIM_SECURE_AUTH_V1_CASTELLO_DE_LA_PLANA_2026';
+      const authHashGerente = crypto.createHash('sha256').update(`admin123:${salt}`).digest('hex');
+      const managerViaHash = await authUseCase.execute('gerente', authHashGerente);
+      assert.ok(managerViaHash);
+      assert.strictEqual(managerViaHash.username, 'gerente');
+
+      const authHashBorrull = crypto.createHash('sha256').update(`2026:${salt}`).digest('hex');
+      const supervisorViaHash = await authUseCase.execute('Borrull', authHashBorrull);
+      assert.ok(supervisorViaHash);
+      assert.strictEqual(supervisorViaHash.name, 'Yris Orsinys');
+
       await assert.rejects(async () => {
         await authUseCase.execute('gerente', 'wrongpassword');
       }, /errInvalidCredentials/);

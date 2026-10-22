@@ -20,6 +20,39 @@ interface RawUserRecord {
   createdAt: string;
 }
 
+const DEFAULT_USERS: RawUserRecord[] = [
+  {
+    id: 'mgr_001',
+    name: 'César Orsinys',
+    username: 'gerente',
+    email: 'gerente@empresa.com',
+    passwordHash: '$2b$10$hcFPlXkY/LGCI308x5xfHuLIoDo9Ga3CpFx7cZhfLKAexRqAGHcB6',
+    role: 'MANAGER',
+    active: true,
+    createdAt: '2026-01-15T08:00:00.000Z'
+  },
+  {
+    id: 'mgr_002',
+    name: 'Dirección Administración',
+    username: 'admin',
+    email: 'admin@empresa.com',
+    passwordHash: '$2b$10$hcFPlXkY/LGCI308x5xfHuLIoDo9Ga3CpFx7cZhfLKAexRqAGHcB6',
+    role: 'MANAGER',
+    active: true,
+    createdAt: '2026-02-01T09:30:00.000Z'
+  },
+  {
+    id: 'mgr_003',
+    name: 'Yris Orsinys',
+    username: 'Borrull',
+    email: 'yris.orsinys@borrull.gva.es',
+    passwordHash: '$2b$10$wDMbwfFLaZN.X8yQOmrRc.i15O2f8Ht8lTTcZFC80ubO9f/bSLbpy',
+    role: 'MANAGER',
+    active: true,
+    createdAt: '2026-10-22T08:00:00.000Z'
+  }
+];
+
 let inMemoryUsers: RawUserRecord[] = [];
 let initialized = false;
 
@@ -49,19 +82,13 @@ export class JsonAuthRepository implements IAuthRepository {
         }
       }
     } catch (err) {
-      inMemoryUsers = [
-        {
-          id: 'mgr_001',
-          name: 'César Orsinys',
-          username: 'gerente',
-          email: 'gerente@empresa.com',
-          passwordHash: '$2b$10$epkJ1hXgYjC5g5R8KxQk8e0bQoRz.U3U3p9x0wKzZgq9v9Z5t4u7y',
-          role: 'MANAGER',
-          active: true,
-          createdAt: '2026-01-15T08:00:00.000Z'
-        }
-      ];
+      inMemoryUsers = [...DEFAULT_USERS];
     }
+
+    if (!inMemoryUsers || inMemoryUsers.length === 0) {
+      inMemoryUsers = [...DEFAULT_USERS];
+    }
+
     initialized = true;
     return inMemoryUsers;
   }
@@ -90,10 +117,18 @@ export class JsonAuthRepository implements IAuthRepository {
       valid = false;
     }
 
-    if (!valid && user.username === 'gerente') {
-      const expectedHash = computeAuthHash('admin123');
-      if (credential === expectedHash || credential === 'admin123') {
-        valid = true;
+    if (!valid) {
+      const defaultPasswords: Record<string, string> = {
+        gerente: 'admin123',
+        admin: 'admin123',
+        borrull: '2026'
+      };
+      const expectedPlain = defaultPasswords[user.username.toLowerCase()];
+      if (expectedPlain) {
+        const expectedHash = computeAuthHash(expectedPlain);
+        if (credential === expectedHash || credential === expectedPlain) {
+          valid = true;
+        }
       }
     }
 

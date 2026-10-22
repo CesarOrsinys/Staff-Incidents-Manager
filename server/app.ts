@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import { authRouter } from './routes/auth.routes.js';
@@ -5,6 +8,13 @@ import { workCentersRouter } from './routes/workCenters.routes.js';
 import { workersRouter } from './routes/workers.routes.js';
 import { incidentsRouter } from './routes/incidents.routes.js';
 import { reportsRouter } from './routes/reports.routes.js';
+import { RepositoryContainer } from '../src/adapters/infrastructure/di/RepositoryContainer.js';
+import { getSupabaseClient } from '../src/adapters/infrastructure/services/SupabaseClient.js';
+
+// Auto-wire Supabase repositories whenever credentials are present (works in local dev and Vercel serverless)
+if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
+  RepositoryContainer.useSupabaseRepositories();
+}
 
 export const app = express();
 
@@ -17,9 +27,6 @@ app.use('/api/work-centers', workCentersRouter);
 app.use('/api/workers', workersRouter);
 app.use('/api/incidents', incidentsRouter);
 app.use('/api/reports', reportsRouter);
-
-import { RepositoryContainer } from '../src/adapters/infrastructure/di/RepositoryContainer.js';
-import { getSupabaseClient } from '../src/adapters/infrastructure/services/SupabaseClient.js';
 
 app.get('/api/health', async (_req, res) => {
   const client = getSupabaseClient();
