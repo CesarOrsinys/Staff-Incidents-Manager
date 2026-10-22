@@ -398,7 +398,6 @@ export class MonthlyReportComponent {
     const btnOvertime = document.getElementById('filter-btn-overtime');
     const btnViewCards = document.getElementById('btn-view-cards');
     const btnViewTable = document.getElementById('btn-view-table');
-    const btnPrint = document.getElementById('btn-print-sheet');
     const btnExcel = document.getElementById('btn-download-excel');
     const btnPdf = document.getElementById('btn-download-pdf');
 
@@ -414,7 +413,6 @@ export class MonthlyReportComponent {
     btnViewCards?.addEventListener('click', () => this.setViewMode('cards'));
     btnViewTable?.addEventListener('click', () => this.setViewMode('table'));
 
-    btnPrint?.addEventListener('click', () => window.print());
     btnExcel?.addEventListener('click', () => this.exportExcel());
     btnPdf?.addEventListener('click', () => this.exportPdf());
 
