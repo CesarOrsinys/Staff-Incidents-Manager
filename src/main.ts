@@ -77,6 +77,7 @@ async function bootstrapApp() {
   document.addEventListener('app:auth-changed', () => {
     if (AppState.currentUser) {
       navigateTo('hub');
+      MasterDataComponent.loadData();
     } else {
       navigateTo('login');
     }

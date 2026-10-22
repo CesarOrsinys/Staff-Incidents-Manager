@@ -49,7 +49,7 @@ export class IncidentFormComponent {
         console.warn('Fallback to local workers cache:', err);
       }
 
-      const activeWorkers = AppState.workers.filter(w => !centerId || w.assignedWorkCenterId === centerId || w.active);
+      const activeWorkers = AppState.workers.filter(w => w.active && (!centerId || w.assignedWorkCenterId === centerId));
       const workerSelect = document.getElementById('form-worker-select') as HTMLSelectElement;
       if (workerSelect) {
         workerSelect.innerHTML = '<option value="">-- Seleccionar Trabajador/a --</option>' +

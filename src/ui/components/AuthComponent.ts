@@ -3,6 +3,8 @@ import { LanguageManager } from '../i18n/LanguageManager.js';
 import { showToast } from '../services/ToastService.js';
 import { withLoader } from '../services/LoaderService.js';
 
+import { MasterDataComponent } from './MasterDataComponent.js';
+
 const AUTH_SALT = 'SIM_SECURE_AUTH_V1_CASTELLO_DE_LA_PLANA_2026';
 
 async function hashCredential(plain: string): Promise<string> {
@@ -28,6 +30,7 @@ export class AuthComponent {
           AppState.currentUser = JSON.parse(savedUser);
           AppState.authToken = savedToken;
           AppState.activeView = 'hub';
+          MasterDataComponent.loadData();
         } catch {
           sessionStorage.removeItem('SIM_AUTH_USER');
           sessionStorage.removeItem('SIM_AUTH_TOKEN');

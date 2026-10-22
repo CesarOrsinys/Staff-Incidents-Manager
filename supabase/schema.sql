@@ -205,3 +205,5 @@ CREATE POLICY "Allow anon read for dev workers" ON workers FOR SELECT TO anon US
 CREATE POLICY "Allow anon write for dev workers" ON workers FOR ALL TO anon USING (true);
 CREATE POLICY "Allow anon read for dev incidents" ON incidents FOR SELECT TO anon USING (true);
 CREATE POLICY "Allow anon write for dev incidents" ON incidents FOR ALL TO anon USING (true);
+CREATE POLICY "Allow anon read for dev manager_users" ON manager_users FOR SELECT TO anon USING (true);
+CREATE POLICY "Allow anon write for dev manager_users" ON manager_users FOR ALL TO anon USING (true);
