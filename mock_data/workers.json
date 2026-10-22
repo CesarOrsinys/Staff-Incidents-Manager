@@ -1,72 +1,90 @@
 [
   {
-    "id": "w_aurora",
-    "name": "Aurora Beltrán",
-    "documentId": "48123456A",
-    "email": "aurora.beltran@empresa.local",
-    "phone": "+34 612 345 678",
-    "contractStatus": "INDEFINIDO",
-    "assignedWorkCenterId": "wc_borrull",
-    "active": true
-  },
-  {
     "id": "w_elizabeth",
-    "name": "Elizabeth Romero",
-    "documentId": "51234567B",
-    "email": "elizabeth.romero@empresa.local",
-    "phone": "+34 623 456 789",
-    "contractStatus": "INDEFINIDO",
-    "assignedWorkCenterId": "wc_borrull",
+    "name": "Elizabeth Sales Fabra",
+    "dni": "18999888E",
+    "workCenterId": "wc_borrull",
+    "contractType": "INDEFINIDO",
     "active": true
   },
   {
-    "id": "w_carlos",
-    "name": "Carlos Mendoza",
-    "documentId": "43987654C",
-    "email": "carlos.mendoza@empresa.local",
-    "phone": "+34 634 567 890",
-    "contractStatus": "TEMPORAL",
-    "assignedWorkCenterId": "wc_borrull",
+    "id": "w_aurora",
+    "name": "Aurora Beltrán Ferrando",
+    "dni": "18942103K",
+    "workCenterId": "wc_borrull",
+    "contractType": "INDEFINIDO",
     "active": true
   },
   {
-    "id": "w_marta",
-    "name": "Marta Soler",
-    "documentId": "73456789D",
-    "email": "marta.soler@empresa.local",
-    "phone": "+34 645 678 901",
-    "contractStatus": "INDEFINIDO",
-    "assignedWorkCenterId": "wc_generalitat",
+    "id": "22222222-2222-2222-2222-222222220001",
+    "name": "Aurora Beltrán Ferrando",
+    "dni": "18942103K",
+    "workCenterId": "11111111-1111-1111-1111-111111110001",
+    "contractType": "INDEFINIDO",
     "active": true
   },
   {
-    "id": "w_javier",
-    "name": "Javier Ortiz",
-    "documentId": "38567890E",
-    "email": "javier.ortiz@empresa.local",
-    "phone": "+34 656 789 012",
-    "contractStatus": "TEMPORAL",
-    "assignedWorkCenterId": "wc_octubre",
+    "id": "22222222-2222-2222-2222-222222220002",
+    "name": "Vicent Sales Albiol",
+    "dni": "19875412M",
+    "workCenterId": "11111111-1111-1111-1111-111111110002",
+    "contractType": "INDEFINIDO",
     "active": true
   },
   {
-    "id": "w_lucia",
-    "name": "Lucía Navarro",
-    "documentId": "44678901F",
-    "email": "lucia.navarro@empresa.local",
-    "phone": "+34 667 890 123",
-    "contractStatus": "INDEFINIDO",
-    "assignedWorkCenterId": "wc_salud",
+    "id": "22222222-2222-2222-2222-222222220003",
+    "name": "Mireia Garcia Nebot",
+    "dni": "20456789L",
+    "workCenterId": "11111111-1111-1111-1111-111111110003",
+    "contractType": "TEMPORAL",
     "active": true
   },
   {
-    "id": "w_pablo",
-    "name": "Pablo Serrano",
-    "documentId": "52789012G",
-    "email": "pablo.serrano@empresa.local",
-    "phone": "+34 678 901 234",
-    "contractStatus": "PRACTICAS",
-    "assignedWorkCenterId": "wc_borrull",
+    "id": "22222222-2222-2222-2222-222222220004",
+    "name": "Marc Roig Ramos",
+    "dni": "18965432B",
+    "workCenterId": "11111111-1111-1111-1111-111111110003",
+    "contractType": "INDEFINIDO",
+    "active": true
+  },
+  {
+    "id": "22222222-2222-2222-2222-222222220005",
+    "name": "Elena Ramos Fabra",
+    "dni": "19012345C",
+    "workCenterId": "11111111-1111-1111-1111-111111110004",
+    "contractType": "INDEFINIDO",
+    "active": true
+  },
+  {
+    "id": "22222222-2222-2222-2222-222222220006",
+    "name": "Carles Vicent Soler",
+    "dni": "20123987R",
+    "workCenterId": "11111111-1111-1111-1111-111111110005",
+    "contractType": "TEMPORAL",
+    "active": true
+  },
+  {
+    "id": "22222222-2222-2222-2222-222222220007",
+    "name": "Neus Forner Barberà",
+    "dni": "18987123P",
+    "workCenterId": "11111111-1111-1111-1111-111111110006",
+    "contractType": "INDEFINIDO",
+    "active": true
+  },
+  {
+    "id": "22222222-2222-2222-2222-222222220008",
+    "name": "Andreu Pascual Miralles",
+    "dni": "19456123F",
+    "workCenterId": "11111111-1111-1111-1111-111111110007",
+    "contractType": "INDEFINIDO",
+    "active": true
+  },
+  {
+    "id": "22222222-2222-2222-2222-222222220009",
+    "name": "Sofia Bellmunt Vilar",
+    "dni": "20567812J",
+    "workCenterId": "11111111-1111-1111-1111-111111110001",
+    "contractType": "TEMPORAL",
     "active": true
   }
 ]

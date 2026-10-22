@@ -8,26 +8,58 @@
     "active": true
   },
   {
-    "id": "wc_generalitat",
-    "name": "Sede Central Generalitat",
-    "code": "GEN-002",
-    "address": "Calle Caballeros, 2, 46001 Valencia",
-    "city": "Valencia",
+    "id": "11111111-1111-1111-1111-111111110001",
+    "code": "CA-PROP-01",
+    "name": "Complex Administratiu PROP Castelló - Generalitat Valenciana",
+    "address": "Carrer Major, 76",
+    "city": "Castellón de la Plana",
     "active": true
   },
   {
-    "id": "wc_octubre",
-    "name": "Complejo Administrativo 9 d'Octubre",
-    "code": "OCT-003",
-    "address": "Carrer de la Democràcia, 77, 46018 València",
-    "city": "Valencia",
+    "id": "11111111-1111-1111-1111-111111110002",
+    "code": "CA-CONSELL-02",
+    "name": "Casa dels Caragols - Seu del Consell de la Generalitat a Castelló",
+    "address": "Carrer Major, 78",
+    "city": "Castellón de la Plana",
     "active": true
   },
   {
-    "id": "wc_salud",
-    "name": "Centro Integrado de Salud Jaume I",
-    "code": "CS-004",
-    "address": "Avinguda del Rei Jaume I, 14, 12001 Castelló",
+    "id": "11111111-1111-1111-1111-111111110003",
+    "code": "CA-HUG-03",
+    "name": "Hospital General Universitari de Castelló - Conselleria de Sanitat",
+    "address": "Avinguda de Benicàssim, 128",
+    "city": "Castellón de la Plana",
+    "active": true
+  },
+  {
+    "id": "11111111-1111-1111-1111-111111110004",
+    "code": "CA-JUST-04",
+    "name": "Ciutat de la Justícia de Castelló - Palau de Justícia",
+    "address": "Bulevard Blasco Ibáñez, 10",
+    "city": "Castellón de la Plana",
+    "active": true
+  },
+  {
+    "id": "11111111-1111-1111-1111-111111110005",
+    "code": "CA-BORRULL-05",
+    "name": "Edifici Administratiu del Govern Valencià (Antic Jutge Borrull)",
+    "address": "Plaça del Jutge Borrull, 1",
+    "city": "Castellón de la Plana",
+    "active": true
+  },
+  {
+    "id": "11111111-1111-1111-1111-111111110006",
+    "code": "CA-IGUALTAT-06",
+    "name": "Direcció Territorial de Serveis Socials i Igualtat",
+    "address": "Avinguda Germans Bou, 81",
+    "city": "Castellón de la Plana",
+    "active": true
+  },
+  {
+    "id": "11111111-1111-1111-1111-111111110007",
+    "code": "CA-AJUNT-07",
+    "name": "Palau Municipal - Ajuntament de Castelló de la Plana",
+    "address": "Plaça Major, 1",
     "city": "Castellón de la Plana",
     "active": true
   }

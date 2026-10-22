@@ -362,11 +362,47 @@
       box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
     }
 
-    /* FORM STYLING */
-    .form-grid {
+    /* DESKTOP FORM LAYOUT & BALANCED CARDS */
+    .form-wrapper {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    .form-two-col-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 18px;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 820px) {
+      .form-two-col-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+
+    .form-section-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     .form-group {
@@ -808,17 +844,17 @@
       </div>
 
       <!-- Login / Logout Buttons -->
-      <button class="btn-auth" id="btn-open-login" data-i18n="navLogin">🔐 Acceso Gerencia</button>
-      <button class="btn-logout" id="btn-logout" style="display:none;" data-i18n="navLogout">🚪 Salir</button>
+      <button class="btn-auth" id="btn-open-login"><span>🔐</span> <span data-i18n="navLogin">Acceso Gerencia</span></button>
+      <button class="btn-logout" id="btn-logout" style="display:none;"><span>🚪</span> <span data-i18n="navLogout">Cerrar Sesión</span></button>
     </div>
   </header>
 
   <!-- SUB-BAR NAVIGATION -->
   <nav class="app-subbar" aria-label="Navegación de secciones">
     <div class="nav-tabs-container">
-      <button class="nav-tab-btn active" data-view="form" data-i18n="navForm">📝 Entrada Rápida</button>
-      <button class="nav-tab-btn" data-view="report" data-i18n="navReport">📊 Informe Mensual</button>
-      <button class="nav-tab-btn" data-view="master" data-i18n="navMaster">⚙️ Maestros</button>
+      <button class="nav-tab-btn active" data-view="form"><span>📝</span> <span data-i18n="navForm">Entrada Rápida</span></button>
+      <button class="nav-tab-btn" data-view="report"><span>📊</span> <span data-i18n="navReport">Informe Mensual</span></button>
+      <button class="nav-tab-btn" data-view="master"><span>⚙️</span> <span data-i18n="navMaster">Maestros</span></button>
     </div>
   </nav>
 
@@ -829,139 +865,159 @@
     <!-- 1. VISTA FORMULARIO ENTRADA RÁPIDA         -->
     <!-- ========================================== -->
     <section class="app-view-section active" id="view-form">
-      <div class="card" style="position:relative;">
-        <div class="card-header">
-          <div class="card-title">
-            <span>📝</span>
-            <span data-i18n="navForm">Entrada Rápida de Incidencias</span>
-          </div>
-          <div>
-            <span class="badge badge-subtle">
-              Registros en sesión: <strong id="session-entries-count" style="margin-left:4px; color:var(--accent-blue);">0</strong>
-            </span>
-          </div>
-        </div>
-
-        <div class="keyboard-hint-box">
-          <div>
-            <span data-i18n="txtKeyboardHint">⚡ Consejo de volcado masivo: Rellena los datos y pulsa Enter para guardar y pasar al siguiente inmediatamente.</span>
-          </div>
-          <div>
-            <span class="kbd">Enter ↵</span>
-          </div>
-        </div>
-
-        <form id="incident-entry-form">
-          <div class="form-grid">
-            
-            <!-- Contexto Global: Centro de Trabajo -->
-            <div class="form-group">
-              <label for="form-work-center">
-                <span data-i18n="txtCenter">Centro de Trabajo</span>
-                <span class="text-xs text-muted">(Contexto)</span>
-              </label>
-              <select class="form-control" id="form-work-center" required></select>
+      <div class="form-wrapper">
+        <div class="card" style="position:relative;">
+          
+          <div class="card-header">
+            <div class="card-title">
+              <span>📝</span>
+              <span data-i18n="navForm">Entrada Rápida</span>
             </div>
-
-            <!-- Contexto Global: Periodo Mes y Año -->
-            <div class="form-group">
-              <label>
-                <span>Periodo del Parte</span>
-                <span class="text-xs text-muted">(Mes / Año)</span>
-              </label>
-              <div style="display:flex; gap:8px;">
-                <select class="form-control" id="form-period-month" style="flex:1;">
-                  <option value="1">1 - Enero</option>
-                  <option value="2">2 - Febrero</option>
-                  <option value="3">3 - Marzo</option>
-                  <option value="4">4 - Abril</option>
-                  <option value="5">5 - Mayo</option>
-                  <option value="6">6 - Junio</option>
-                  <option value="7">7 - Julio</option>
-                  <option value="8">8 - Agosto</option>
-                  <option value="9">9 - Septiembre</option>
-                  <option value="10">10 - Octubre</option>
-                  <option value="11">11 - Noviembre</option>
-                  <option value="12">12 - Diciembre</option>
-                </select>
-                <input type="number" class="form-control" id="form-period-year" style="width:90px;" min="2020" max="2035" value="2026">
-              </div>
+            <div>
+              <span class="badge badge-subtle">
+                Registros en sesión: <strong id="session-entries-count" style="margin-left:4px; color:var(--accent-blue);">0</strong>
+              </span>
             </div>
+          </div>
 
-            <!-- Trabajador Autocompletado -->
-            <div class="form-group">
-              <label for="form-worker-search">
-                <span data-i18n="txtWorker">Trabajador</span>
-                <span class="text-xs text-muted">(Autocompletar)</span>
-              </label>
-              <input type="text" class="form-control" id="form-worker-search" list="workers-datalist" placeholder="Escribe el nombre del trabajador..." required autocomplete="off">
-              <datalist id="workers-datalist"></datalist>
+          <div class="keyboard-hint-box">
+            <div>
+              <span data-i18n="txtKeyboardHint">Consejo de volcado masivo: Rellena los datos y pulsa Enter para guardar y pasar al siguiente inmediatamente.</span>
             </div>
-
-            <!-- Tipo de Registro -->
-            <div class="form-group">
-              <label for="form-incident-type" data-i18n="txtIncidentType">Tipo de Registro</label>
-              <select class="form-control" id="form-incident-type">
-                <option value="SUBSTITUTION">🏃 Sustitución</option>
-                <option value="VACATION">🏖️ Vacaciones</option>
-                <option value="PERSONAL_MATTERS">📋 Asuntos Propios</option>
-                <option value="LEAVE_OR_DEATH">🏥 Baja / Fallecimiento</option>
-                <option value="CONTRACT_END">📄 Fin de Contrato</option>
-                <option value="OVERTIME">⏰ Horas Extra</option>
-              </select>
+            <div>
+              <span class="kbd">Enter ↵</span>
             </div>
+          </div>
 
-            <!-- Selector de Fecha(s): Día suelto o Rango -->
-            <div class="form-group">
-              <label>
-                <span data-i18n="txtDates">Fecha(s)</span>
-                <span style="font-weight:normal; font-size:0.75rem;">
-                  <input type="checkbox" id="form-is-range" style="margin-right:4px;">
-                  <label for="form-is-range" style="cursor:pointer;" data-i18n="txtDateRange">Rango de fechas</label>
-                </span>
-              </label>
-              <div style="display:flex; gap:8px;">
-                <input type="date" class="form-control" id="form-start-date" required>
-                <div id="wrap-end-date" style="display:none; flex:1;">
-                  <input type="date" class="form-control" id="form-end-date">
+          <form id="incident-entry-form">
+            <div class="form-two-col-grid">
+              
+              <!-- PANEL IZQUIERDO: Contexto y Personal -->
+              <div class="form-section-box">
+                <div class="form-section-title">
+                  <span>🏛️</span>
+                  <span>Contexto de la Ubicación y Personal</span>
+                </div>
+
+                <!-- Contexto Global: Centro de Trabajo -->
+                <div class="form-group">
+                  <label for="form-work-center">
+                    <span data-i18n="txtCenter">Centro de Trabajo</span>
+                    <span class="text-xs text-muted">(Contexto fijado)</span>
+                  </label>
+                  <select class="form-control" id="form-work-center" required></select>
+                </div>
+
+                <!-- Contexto Global: Periodo Mes y Año -->
+                <div class="form-group">
+                  <label>
+                    <span>Periodo del Parte</span>
+                    <span class="text-xs text-muted">(Mes / Año)</span>
+                  </label>
+                  <div style="display:flex; gap:8px;">
+                    <select class="form-control" id="form-period-month" style="flex:1;">
+                      <option value="1">1 - Enero</option>
+                      <option value="2">2 - Febrero</option>
+                      <option value="3">3 - Marzo</option>
+                      <option value="4">4 - Abril</option>
+                      <option value="5">5 - Mayo</option>
+                      <option value="6">6 - Junio</option>
+                      <option value="7">7 - Julio</option>
+                      <option value="8">8 - Agosto</option>
+                      <option value="9">9 - Septiembre</option>
+                      <option value="10">10 - Octubre</option>
+                      <option value="11">11 - Noviembre</option>
+                      <option value="12">12 - Diciembre</option>
+                    </select>
+                    <input type="number" class="form-control" id="form-period-year" style="width:96px;" min="2020" max="2035" value="2026">
+                  </div>
+                </div>
+
+                <!-- Trabajador Autocompletado -->
+                <div class="form-group">
+                  <label for="form-worker-search">
+                    <span data-i18n="txtWorker">Trabajador</span>
+                    <span class="text-xs text-muted">(Autocompletar por nombre)</span>
+                  </label>
+                  <input type="text" class="form-control" id="form-worker-search" list="workers-datalist" placeholder="Escribe el nombre del trabajador..." required autocomplete="off">
+                  <datalist id="workers-datalist"></datalist>
+                </div>
+
+                <!-- Tipo de Registro -->
+                <div class="form-group">
+                  <label for="form-incident-type" data-i18n="txtIncidentType">Tipo de Registro</label>
+                  <select class="form-control" id="form-incident-type">
+                    <option value="SUBSTITUTION">🏃 Sustitución</option>
+                    <option value="VACATION">🏖️ Vacaciones</option>
+                    <option value="PERSONAL_MATTERS">📋 Asuntos Propios</option>
+                    <option value="LEAVE_OR_DEATH">🏥 Baja / Fallecimiento</option>
+                    <option value="CONTRACT_END">📄 Fin de Contrato</option>
+                    <option value="OVERTIME">⏰ Horas Extra</option>
+                  </select>
                 </div>
               </div>
-            </div>
 
-            <!-- Condicional 1: Horario (Solo si Sustitución u Horas Extra) -->
-            <div class="form-group" id="conditional-schedule-row">
-              <label>
-                <span data-i18n="txtSchedule">Horario (Inicio - Fin)</span>
-                <span class="hours-badge" id="form-calculated-hours">0 h</span>
-              </label>
-              <div style="display:flex; gap:8px;">
-                <input type="time" class="form-control" id="form-start-time" placeholder="13:30">
-                <input type="time" class="form-control" id="form-end-time" placeholder="18:00">
+              <!-- PANEL DERECHO: Jornada e Incidencia -->
+              <div class="form-section-box">
+                <div class="form-section-title">
+                  <span>⏱️</span>
+                  <span>Jornada y Registro de Incidencia</span>
+                </div>
+
+                <!-- Selector de Fecha(s): Día suelto o Rango -->
+                <div class="form-group">
+                  <label>
+                    <span data-i18n="txtDates">Fecha(s)</span>
+                    <span style="font-weight:normal; font-size:0.75rem; display:inline-flex; align-items:center; gap:4px;">
+                      <input type="checkbox" id="form-is-range">
+                      <label for="form-is-range" style="cursor:pointer;" data-i18n="txtDateRange">Rango de fechas</label>
+                    </span>
+                  </label>
+                  <div style="display:flex; gap:8px;">
+                    <input type="date" class="form-control" id="form-start-date" required>
+                    <div id="wrap-end-date" style="display:none; flex:1;">
+                      <input type="date" class="form-control" id="form-end-date">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Condicional 1: Horario (Solo si Sustitución u Horas Extra) -->
+                <div class="form-group" id="conditional-schedule-row">
+                  <label>
+                    <span data-i18n="txtSchedule">Horario (Inicio - Fin)</span>
+                    <span class="hours-badge" id="form-calculated-hours">0 h</span>
+                  </label>
+                  <div style="display:flex; gap:8px;">
+                    <input type="time" class="form-control" id="form-start-time" placeholder="13:30">
+                    <input type="time" class="form-control" id="form-end-time" placeholder="18:00">
+                  </div>
+                </div>
+
+                <!-- Condicional 2: Trabajador Sustituido (Solo si Sustitución) -->
+                <div class="form-group" id="conditional-substituted-row">
+                  <label for="form-substituted-worker" data-i18n="txtSubstitutedWorker">Trabajador Sustituido (¿A quién cubre?)</label>
+                  <select class="form-control" id="form-substituted-worker"></select>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="form-group">
+                  <label for="form-observations" data-i18n="txtObservations">Observaciones (Opcional)</label>
+                  <input type="text" class="form-control" id="form-observations" placeholder="Detalles adicionales, motivo médico o autorización...">
+                </div>
               </div>
+
             </div>
 
-            <!-- Condicional 2: Trabajador Sustituido (Solo si Sustitución) -->
-            <div class="form-group" id="conditional-substituted-row">
-              <label for="form-substituted-worker" data-i18n="txtSubstitutedWorker">Trabajador Sustituido (¿A quién cubre?)</label>
-              <select class="form-control" id="form-substituted-worker"></select>
+            <div class="form-actions">
+              <button type="submit" class="btn-secondary" id="btn-save-only" data-i18n="btnSaveOnly">Guardar Incidencia</button>
+              <button type="button" class="btn-primary" id="btn-save-and-next">
+                <span data-i18n="btnFastSave">Guardar y Nuevo (Enter)</span>
+                <span>↵</span>
+              </button>
             </div>
+          </form>
 
-            <!-- Observaciones -->
-            <div class="form-group" style="grid-column: 1 / -1;">
-              <label for="form-observations" data-i18n="txtObservations">Observaciones (Opcional)</label>
-              <input type="text" class="form-control" id="form-observations" placeholder="Detalles adicionales, motivo médico o autorización...">
-            </div>
-
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="btn-secondary" id="btn-save-only" data-i18n="btnSaveOnly">Guardar Incidencia</button>
-            <button type="button" class="btn-primary" id="btn-save-and-next">
-              <span data-i18n="btnFastSave">Guardar y Nuevo (Enter)</span>
-              <span>↵</span>
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </section>
 
@@ -1084,7 +1140,10 @@
               <span>🏢</span>
               <span>Centros de Trabajo</span>
             </div>
-            <button class="btn-primary" id="btn-add-center" style="padding:6px 14px; font-size:0.8rem;" data-i18n="btnAddCenter">+ Añadir Centro</button>
+            <button class="btn-primary" id="btn-add-center" style="padding:6px 14px; font-size:0.8rem;">
+              <span>➕</span>
+              <span data-i18n="btnAddCenter">Añadir Centro</span>
+            </button>
           </div>
           <div class="table-container">
             <table>
@@ -1109,7 +1168,10 @@
               <span>👥</span>
               <span>Plantilla de Trabajadores</span>
             </div>
-            <button class="btn-primary" id="btn-add-worker" style="padding:6px 14px; font-size:0.8rem;" data-i18n="btnAddWorker">+ Añadir Trabajador</button>
+            <button class="btn-primary" id="btn-add-worker" style="padding:6px 14px; font-size:0.8rem;">
+              <span>➕</span>
+              <span data-i18n="btnAddWorker">Añadir Trabajador</span>
+            </button>
           </div>
           <div class="table-container">
             <table>
@@ -1222,6 +1284,64 @@
         </div>
         <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Guardar Trabajador</button>
       </form>
+    </div>
+  </div>
+
+  <!-- ANIMATED SVG HOURGLASS LOADER (GLASSMORPHISM OVERLAY) -->
+  <div class="app-loader-backdrop" id="app-loader" style="display:none;">
+    <div class="loader-content" style="display:flex; flex-direction:column; align-items:center; gap:16px;">
+      <svg id="wrap" width="180" height="180" viewBox="0 0 300 300" style="filter: drop-shadow(0 12px 30px rgba(0,0,0,0.6));">
+        <!-- background -->
+        <g>
+          <circle cx="150" cy="150" r="130" style="stroke: #38bdf8; stroke-width:18; fill:transparent"/>
+          <circle cx="150" cy="150" r="115" style="fill:#1e293b"/>
+          <path style="stroke: #0284c7; stroke-dasharray:820; stroke-dashoffset:820; stroke-width:18; fill:transparent" d="M150,150 m0,-130 a 130,130 0 0,1 0,260 a 130,130 0 0,1 0,-260">
+            <animate attributeName="stroke-dashoffset" dur="6s" to="-820" repeatCount="indefinite"/>
+          </path>
+        </g>
+        
+        <!-- image -->
+        <g>
+          <path id="hourglass" d="M150,150 C60,85 240,85 150,150 C60,215 240,215 150,150 Z" style="stroke: white; stroke-width:5; fill:white;" />
+          <path id="frame" d="M100,97 L200, 97 M100,203 L200,203 M110,97 L110,142 M110,158 L110,200 M190,97 L190,142 M190,158 L190,200 M110,150 L110,150 M190,150 L190,150" style="stroke:#38bdf8; stroke-width:6; stroke-linecap:round" />
+          <animateTransform xlink:href="#frame" attributeName="transform" type="rotate" begin="0s" dur="3s" values="0 150 150; 0 150 150; 180 150 150" keyTimes="0; 0.8; 1" repeatCount="indefinite" />
+          <animateTransform xlink:href="#hourglass" attributeName="transform" type="rotate" begin="0s" dur="3s" values="0 150 150; 0 150 150; 180 150 150" keyTimes="0; 0.8; 1" repeatCount="indefinite" />
+        </g>
+        
+        <!-- sand -->
+        <g>
+          <!-- upper part -->
+          <polygon id="upper" points="120,125 180,125 150,147" style="fill:#0f172a;">
+            <animate attributeName="points" dur="3s" keyTimes="0; 0.8; 1" values="120,125 180,125 150,147; 150,150 150,150 150,150; 150,150 150,150 150,150" repeatCount="indefinite"/>
+          </polygon>
+          
+          <!-- falling sand -->
+          <path id="line" stroke-linecap="round" stroke-dasharray="1,4" stroke-dashoffset="200.00" stroke="#0f172a" stroke-width="2" d="M150,150 L150,198">
+            <animate attributeName="stroke-dashoffset" dur="3s" to="1.00" repeatCount="indefinite"/>
+            <animate attributeName="d" dur="3s" to="M150,195 L150,195" values="M150,150 L150,198; M150,150 L150,198; M150,198 L150,198; M150,195 L150,195" keyTimes="0; 0.65; 0.9; 1" repeatCount="indefinite"/>
+            <animate attributeName="stroke" dur="3s" keyTimes="0; 0.65; 0.8; 1" values="#0f172a;#0f172a;transparent;transparent" to="transparent" repeatCount="indefinite"/>
+          </path>
+          
+          <!-- lower part -->
+          <g id="lower">
+            <path d="M150,180 L180,190 A28,10 0 1,1 120,190 L150,180 Z" style="stroke: transparent; stroke-width:5; fill:#0f172a;">
+              <animateTransform attributeName="transform" type="translate" keyTimes="0; 0.65; 1" values="0 15; 0 0; 0 0" dur="3s" repeatCount="indefinite" />
+            </path>
+            <animateTransform xlink:href="#lower" attributeName="transform" type="rotate" begin="0s" dur="3s" values="0 150 150; 0 150 150; 180 150 150" keyTimes="0; 0.8; 1" repeatCount="indefinite"/>
+          </g>
+          
+          <!-- lower overlay - hourglass -->
+          <path d="M150,150 C60,85 240,85 150,150 C60,215 240,215 150,150 Z" style="stroke: white; stroke-width:5; fill:transparent;">
+            <animateTransform attributeName="transform" type="rotate" begin="0s" dur="3s" values="0 150 150; 0 150 150; 180 150 150" keyTimes="0; 0.8; 1" repeatCount="indefinite"/>
+          </path>
+          
+          <!-- lower overlay - frame -->
+          <path id="frame2" d="M100,97 L200, 97 M100,203 L200,203" style="stroke:#38bdf8; stroke-width:6; stroke-linecap:round">
+            <animateTransform attributeName="transform" type="rotate" begin="0s" dur="3s" values="0 150 150; 0 150 150; 180 150 150" keyTimes="0; 0.8; 1" repeatCount="indefinite"/>
+          </path>
+        </g>
+      </svg>
+      <div class="loader-text" id="loader-text" style="font-size:0.95rem; font-weight:600; color:#f8fafc; text-shadow:0 2px 8px rgba(0,0,0,0.6);">Procesando...</div>
     </div>
   </div>
 
