@@ -16,11 +16,14 @@ DROP TABLE IF EXISTS workers CASCADE;
 DROP TABLE IF EXISTS work_centers CASCADE;
 DROP TABLE IF EXISTS manager_users CASCADE;
 
+DROP TYPE IF EXISTS incident_category CASCADE;
+DROP TYPE IF EXISTS contract_type_enum CASCADE;
+
 -- ============================================================================
 -- 2. ENUMS & DOMAIN TYPES
 -- ============================================================================
 CREATE TYPE incident_category AS ENUM (
-  'SUBSTITUTION',       -- Sustitución por cobertura de puesto/baja
+  'SUBSTITUTION',       -- Sustitución por cobertura de puesto/baja (quien cubre gana horas extras, sustituido debe)
   'VACATION',           -- Vacaciones anuales reglamentarias
   'PERSONAL_MATTERS',   -- Permiso por asuntos propios / moscosos
   'LEAVE_OR_DEATH',     -- Incapacidad temporal (IT), baja médica o permiso por defunción
@@ -31,6 +34,7 @@ CREATE TYPE incident_category AS ENUM (
 CREATE TYPE contract_type_enum AS ENUM (
   'INDEFINIDO',         -- Personal laboral fijo / funcionario de carrera
   'TEMPORAL',           -- Funcionario interino / contrato laboral temporal
+  'SUPLENCIA',          -- Contrato de sustitución / interinidad
   'PRACTICAS',          -- Contrato formativo / prácticas curriculares
   'FORMACION',          -- Formación dual
   'FIJO_DISCONTINUO'    -- Campaña o refuerzo estacional
@@ -40,13 +44,13 @@ CREATE TYPE contract_type_enum AS ENUM (
 -- 3. TABLE: WORK CENTERS (Centros de Trabajo Públicos)
 -- ============================================================================
 CREATE TABLE work_centers (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  code VARCHAR(30) NOT NULL UNIQUE,
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  code VARCHAR(50) NOT NULL UNIQUE,
   name VARCHAR(200) NOT NULL,
   entity_type VARCHAR(100) DEFAULT 'Generalitat Valenciana',
   address VARCHAR(255) NOT NULL,
-  postal_code VARCHAR(10) DEFAULT '12001',
-  city VARCHAR(100) DEFAULT 'Castelló de la Plana',
+  postal_code VARCHAR(10) DEFAULT '12003',
+  city VARCHAR(100) DEFAULT 'Castellón de la Plana',
   province VARCHAR(100) DEFAULT 'Castelló',
   phone VARCHAR(30),
   email VARCHAR(150),
@@ -59,14 +63,14 @@ CREATE TABLE work_centers (
 -- 4. TABLE: WORKERS (Plantilla de Personal y Empleados Públicos)
 -- ============================================================================
 CREATE TABLE workers (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   dni VARCHAR(20) NOT NULL UNIQUE,
   first_name VARCHAR(100) NOT NULL,
   last_name VARCHAR(150) NOT NULL,
   full_name VARCHAR(255) GENERATED ALWAYS AS (first_name || ' ' || last_name) STORED,
-  work_center_id UUID REFERENCES work_centers(id) ON DELETE SET NULL,
+  work_center_id TEXT REFERENCES work_centers(id) ON DELETE SET NULL,
   contract_type contract_type_enum NOT NULL DEFAULT 'INDEFINIDO',
-  job_category VARCHAR(150) DEFAULT 'Auxiliar Administratiu/va',
+  job_category VARCHAR(150) DEFAULT 'Personal de Servicios / Auxiliar',
   email VARCHAR(150),
   phone VARCHAR(30),
   active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -78,7 +82,7 @@ CREATE TABLE workers (
 -- 5. TABLE: MANAGER USERS (Gestores y Gerencia con RBAC)
 -- ============================================================================
 CREATE TABLE manager_users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   username VARCHAR(60) NOT NULL UNIQUE,
   email VARCHAR(150) NOT NULL UNIQUE,
   full_name VARCHAR(200) NOT NULL,
@@ -94,9 +98,9 @@ CREATE TABLE manager_users (
 -- 6. TABLE: INCIDENTS (Partes de Horas, Ausencias y Sustituciones)
 -- ============================================================================
 CREATE TABLE incidents (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  worker_id UUID NOT NULL REFERENCES workers(id) ON DELETE RESTRICT,
-  work_center_id UUID NOT NULL REFERENCES work_centers(id) ON DELETE RESTRICT,
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  worker_id TEXT NOT NULL REFERENCES workers(id) ON DELETE CASCADE,
+  work_center_id TEXT NOT NULL REFERENCES work_centers(id) ON DELETE CASCADE,
   incident_type incident_category NOT NULL,
   is_date_range BOOLEAN NOT NULL DEFAULT FALSE,
   start_date DATE NOT NULL,
@@ -104,11 +108,11 @@ CREATE TABLE incidents (
   start_time TIME WITHOUT TIME ZONE,
   end_time TIME WITHOUT TIME ZONE,
   total_hours NUMERIC(6, 2) NOT NULL DEFAULT 0.00,
-  substituted_worker_id UUID REFERENCES workers(id) ON DELETE SET NULL,
+  substituted_worker_id TEXT REFERENCES workers(id) ON DELETE SET NULL,
   observations TEXT,
   period_month SMALLINT NOT NULL CHECK (period_month BETWEEN 1 AND 12),
   period_year SMALLINT NOT NULL CHECK (period_year BETWEEN 2020 AND 2040),
-  created_by UUID REFERENCES manager_users(id) ON DELETE SET NULL,
+  created_by TEXT DEFAULT 'Gerente',
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
 
@@ -118,11 +122,6 @@ CREATE TABLE incidents (
   -- Restricción de Integridad: sustituto no puede ser el mismo trabajador
   CONSTRAINT chk_substitute_different CHECK (
     substituted_worker_id IS NULL OR substituted_worker_id <> worker_id
-  ),
-
-  -- Restricción de Horario para sustitución y horas extra
-  CONSTRAINT chk_schedule_rules CHECK (
-    incident_type NOT IN ('SUBSTITUTION', 'OVERTIME') OR (start_time IS NOT NULL AND end_time IS NOT NULL)
   )
 );
 
@@ -130,8 +129,8 @@ CREATE TABLE incidents (
 -- 7. TABLE: INCIDENT AUDIT LOGS (Auditoría Legal y Trazabilidad)
 -- ============================================================================
 CREATE TABLE incident_audit_logs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  incident_id UUID REFERENCES incidents(id) ON DELETE CASCADE,
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  incident_id TEXT REFERENCES incidents(id) ON DELETE CASCADE,
   action VARCHAR(40) NOT NULL, -- 'CREATED', 'UPDATED', 'DELETED', 'EXPORTED'
   performed_by VARCHAR(150) NOT NULL DEFAULT 'Sistema',
   payload JSONB,
@@ -139,7 +138,7 @@ CREATE TABLE incident_audit_logs (
 );
 
 -- ============================================================================
--- 8. INDEXES FOR PERFORMANCE
+-- 8. INDEXES FOR HIGH PERFORMANCE
 -- ============================================================================
 CREATE INDEX idx_incidents_period ON incidents (period_year, period_month);
 CREATE INDEX idx_incidents_worker ON incidents (worker_id);
@@ -199,7 +198,7 @@ CREATE POLICY "Allow authenticated write on incidents" ON incidents FOR ALL TO a
 CREATE POLICY "Allow authenticated read on audit_logs" ON incident_audit_logs FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Allow authenticated insert on audit_logs" ON incident_audit_logs FOR INSERT TO authenticated WITH CHECK (true);
 
--- Allow anonymous access for demo/dev if configured
+-- Allow anonymous access for demo/dev
 CREATE POLICY "Allow anon read for dev work_centers" ON work_centers FOR SELECT TO anon USING (true);
 CREATE POLICY "Allow anon write for dev work_centers" ON work_centers FOR ALL TO anon USING (true);
 CREATE POLICY "Allow anon read for dev workers" ON workers FOR SELECT TO anon USING (true);
