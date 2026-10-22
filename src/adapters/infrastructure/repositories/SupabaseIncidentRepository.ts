@@ -1,22 +1,22 @@
 import { IIncidentRepository, IncidentFilter } from '../../../core/ports/IIncidentRepository.js';
 import { Incident } from '../../../core/domain/entities/Incident.js';
+import { getSupabaseClient } from '../services/SupabaseClient.js';
 
 /**
  * Phase 2 Repository: Supabase / PostgreSQL Adapter
  * Conforms 100% to IIncidentRepository. When environment variables SUPABASE_URL
- * and SUPABASE_ANON_KEY are provided, this adapter seamlessly replaces JsonIncidentRepository
- * via the Dependency Injection container (RepositoryContainer) without ANY changes to use cases or UI.
+ * and SUPABASE_ANON_KEY are provided, this adapter seamlessly handles database persistence.
  */
 export class SupabaseIncidentRepository implements IIncidentRepository {
   private client: any;
 
   constructor(supabaseClient?: any) {
-    this.client = supabaseClient || null;
+    this.client = supabaseClient || getSupabaseClient();
   }
 
   async getAll(filter?: IncidentFilter): Promise<Incident[]> {
     if (!this.client) {
-      console.warn('[SupabaseIncidentRepository] Supabase client not configured. Ready for Phase 2 integration.');
+      console.warn('[SupabaseIncidentRepository] Supabase client not configured.');
       return [];
     }
     let query = this.client.from('incidents').select('*');
@@ -24,10 +24,13 @@ export class SupabaseIncidentRepository implements IIncidentRepository {
     if (filter?.periodYear) query = query.eq('period_year', filter.periodYear);
     if (filter?.periodMonth) query = query.eq('period_month', filter.periodMonth);
     if (filter?.workerId) query = query.eq('worker_id', filter.workerId);
-    if (filter?.type) query = query.eq('type', filter.type);
+    if (filter?.type) query = query.eq('incident_type', filter.type);
 
     const { data, error } = await query;
-    if (error) throw error;
+    if (error) {
+      console.warn('[SupabaseIncidentRepository] getAll error:', error.message);
+      throw error;
+    }
     return (data || []).map(this.mapToEntity);
   }
 
@@ -72,13 +75,13 @@ export class SupabaseIncidentRepository implements IIncidentRepository {
       periodYear: row.period_year,
       periodMonth: row.period_month,
       workerId: row.worker_id,
-      type: row.type,
+      type: row.incident_type || row.type,
       startDate: row.start_date,
       endDate: row.end_date,
-      isRange: row.is_range,
+      isRange: row.is_date_range !== undefined ? row.is_date_range : row.is_range,
       startTime: row.start_time,
       endTime: row.end_time,
-      totalHours: row.total_hours,
+      totalHours: Number(row.total_hours) || 0,
       substitutedWorkerId: row.substituted_worker_id,
       observations: row.observations,
       createdAt: row.created_at,
@@ -92,10 +95,10 @@ export class SupabaseIncidentRepository implements IIncidentRepository {
     if (entity.periodYear !== undefined) dbObj.period_year = entity.periodYear;
     if (entity.periodMonth !== undefined) dbObj.period_month = entity.periodMonth;
     if (entity.workerId !== undefined) dbObj.worker_id = entity.workerId;
-    if (entity.type !== undefined) dbObj.type = entity.type;
+    if (entity.type !== undefined) dbObj.incident_type = entity.type;
     if (entity.startDate !== undefined) dbObj.start_date = entity.startDate;
     if (entity.endDate !== undefined) dbObj.end_date = entity.endDate;
-    if (entity.isRange !== undefined) dbObj.is_range = entity.isRange;
+    if (entity.isRange !== undefined) dbObj.is_date_range = entity.isRange;
     if (entity.startTime !== undefined) dbObj.start_time = entity.startTime;
     if (entity.endTime !== undefined) dbObj.end_time = entity.endTime;
     if (entity.totalHours !== undefined) dbObj.total_hours = entity.totalHours;
